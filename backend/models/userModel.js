@@ -47,6 +47,21 @@ const userSchema = new mongoose.Schema({
         },
       },
     ],
+    // Twitter OAuth temporary storage
+    twitter_oauth: {
+      state: {
+        type: String,
+        trim: true,
+      },
+      userId: {
+        type: String,
+        trim: true,
+      },
+      codeVerifier: {
+        type: String,
+        trim: true,
+      },
+    },
     // CreatedAt field: automatically set to the current date/time
     createdAt: {
       type: Date,

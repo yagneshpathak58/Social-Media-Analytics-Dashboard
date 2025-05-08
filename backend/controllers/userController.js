@@ -11,6 +11,9 @@ import { TwitterApi } from "twitter-api-v2";
 // Load environment variables from .env file
 dotenv.config();
 
+// Log client credentials for debugging (remove in production)
+console.log("TWITTER_API_KEY:", process.env.TWITTER_API_KEY);
+console.log("TWITTER_API_SECRET:", process.env.TWITTER_API_SECRET ? "[REDACTED]" : "MISSING");
 // Initialize Twitter client
 const twitterClient = new TwitterApi({
 clientId: process.env.TWITTER_API_KEY,
@@ -247,6 +250,8 @@ export const initiateTwitterOAuth = async (req, res) => {
     if (!userId || !state) {
       return res.status(400).json({ message: "User ID and state are required" });
     }
+    // Log the raw query to debug
+    console.log("Raw req.query:", req.query);
 
     // Generate a code verifier and challenge for PKCE
     const codeVerifier = crypto.randomBytes(32).toString("hex");
@@ -276,7 +281,8 @@ export const initiateTwitterOAuth = async (req, res) => {
         $set: {
           twitter_oauth: { state, userId, codeVerifier },
         },
-      }
+      },
+      { upsert: true }
     );
 
     // Redirect to Twitter's auth URL
@@ -288,149 +294,162 @@ export const initiateTwitterOAuth = async (req, res) => {
 
 // Controller: Handle social media callback
 export const handleSocialCallback = async (req, res) => {
-try {
-// Extract query parameters
-const { state, code, error, error_description } = req.query;
+  try {
+    // Extract query parameters
+    const { state, code, error, error_description } = req.query;
 
-// Handle OAuth errors
-if (error) {
-  return res.status(400).json({ message: `OAuth error: ${error_description || error}` });
-}
-
-// Validate state
-if (!state) {
-  return res.status(400).json({ message: "Missing state parameter" });
-}
-
-// Find user by state
-const user = await User.findOne({ "twitter_oauth.state": state });
-if (!user || !user.twitter_oauth) {
-  return res.status(400).json({ message: "Invalid state or user not found" });
-}
-
-const userId = user.twitter_oauth.userId;
-const codeVerifier = user.twitter_oauth.codeVerifier;
-
-let platform = "Twitter"; // Default to Twitter for this flow
-let accountData;
-
-if (platform === "Twitter" && code) {
-  // Exchange code for access token
-  const tokenResponse = await twitterClient.loginWithOAuth2({
-    code,
-    codeVerifier,
-    redirectUri: process.env.TWITTER_CALLBACK_URL,
-  });
-
-  const accessToken = tokenResponse.accessToken;
-
-  // Fetch user info
-  const client = new TwitterApi(accessToken);
-  const userInfo = await client.v2.me({ "user.fields": "username" });
-  const username = userInfo.data.username;
-
-  accountData = {
-    platform: "Twitter",
-    username,
-    accessToken,
-  };
-} else if (platform === "Instagram" && code) {
-  // Exchange code for Instagram access token
-  const appId = process.env.INSTAGRAM_APP_ID;
-  const appSecret = process.env.INSTAGRAM_APP_SECRET;
-  const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
-
-  const tokenResponse = await fetch(
-    `https://api.instagram.com/oauth/access_token`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: appId,
-        client_secret: appSecret,
-        grant_type: "authorization_code",
-        redirect_uri: redirectUri,
-        code,
-      }),
+    // Handle OAuth errors
+    if (error) {
+      return res.status(400).json({ message: `OAuth error: ${error_description || error}` });
     }
-  );
 
-  const tokenData = await tokenResponse.json();
-  if (tokenData.error) {
-    return res.status(400).json({ message: tokenData.error.message });
+    // Validate state
+    if (!state) {
+      return res.status(400).json({ message: "Missing state parameter" });
+    }
+
+    console.log("Callback state from query:", state);
+    // Find user by state
+    const user = await User.findOne({ "twitter_oauth.state": state });
+    console.log("Found user twitter_oauth:", user ? user.twitter_oauth : "null");
+    if (!user || !user.twitter_oauth) {
+      return res.status(400).json({ message: "Invalid state or user not found" });
+    }
+
+    const userId = String(user.twitter_oauth.userId);
+    console.log("Callback userId:", userId, "Type:", typeof userId);
+    const codeVerifier = user.twitter_oauth.codeVerifier;
+    console.log("Callback codeVerifier:", codeVerifier);
+
+    let platform = "Twitter"; // Default to Twitter for this flow
+    let accountData;
+
+    if (platform === "Twitter" && code) {
+      // Log details for debugging
+      console.log("Callback code:", code);
+      console.log("Callback redirectUri:", process.env.TWITTER_CALLBACK_URL);
+      console.log("Client ID used:", process.env.TWITTER_API_KEY);
+      // Exchange code for access token
+      try {
+        const tokenResponse = await twitterClient.loginWithOAuth2({
+          code,
+          codeVerifier,
+          redirectUri: process.env.TWITTER_CALLBACK_URL,
+        });
+        const accessToken = tokenResponse.accessToken;
+        console.log("Access token received:", accessToken);
+
+        // Fetch user info
+        const client = new TwitterApi(accessToken);
+        const userInfo = await client.v2.me({ "user.fields": "username" });
+        const username = userInfo.data.username;
+
+        accountData = {
+          platform: "Twitter",
+          username,
+          accessToken,
+        };
+      } catch (tokenError) {
+        console.log("Twitter token error details:", tokenError.response?.data || tokenError);
+        throw new Error(`Twitter token exchange failed: ${tokenError.message}`);
+      }
+    } else if (platform === "Instagram" && code) {
+      // Exchange code for Instagram access token
+      const appId = process.env.INSTAGRAM_APP_ID;
+      const appSecret = process.env.INSTAGRAM_APP_SECRET;
+      const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
+
+      const tokenResponse = await fetch(
+        `https://api.instagram.com/oauth/access_token`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            client_id: appId,
+            client_secret: appSecret,
+            grant_type: "authorization_code",
+            redirect_uri: redirectUri,
+            code,
+          }),
+        }
+      );
+
+      const tokenData = await tokenResponse.json();
+      if (tokenData.error) {
+        return res.status(400).json({ message: tokenData.error.message });
+      }
+
+      const accessToken = tokenData.access_token;
+      const instagramUserId = tokenData.user_id;
+
+      // Fetch username using Instagram Graph API
+      const userResponse = await fetch(
+        `https://graph.instagram.com/${instagramUserId}?fields=username&access_token=${accessToken}`
+      );
+      const userData = await userResponse.json();
+      if (userData.error) {
+        return res.status(400).json({ message: userData.error.message });
+      }
+
+      accountData = {
+        platform: "Instagram",
+        username: userData.username,
+        accessToken,
+      };
+    } else if (platform === "Facebook" && code) {
+      // Exchange code for Facebook access token
+      const appId = process.env.FACEBOOK_APP_ID;
+      const appSecret = process.env.FACEBOOK_APP_SECRET;
+      const redirectUri = process.env.FACEBOOK_CALLBACK_URL;
+
+      const tokenResponse = await fetch(
+        `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
+      );
+
+      const tokenData = await tokenResponse.json();
+      if (tokenData.error) {
+        return res.status(400).json({ message: tokenData.error.message });
+      }
+
+      const accessToken = tokenData.access_token;
+
+      // Fetch user's pages to get page username
+      const pagesResponse = await fetch(
+        `https://graph.facebook.com/v18.0/me/accounts?access_token=${accessToken}`
+      );
+      const pagesData = await pagesResponse.json();
+      if (pagesData.error || !pagesData.data.length) {
+        return res.status(400).json({ message: "No pages found or error" });
+      }
+
+      const page = pagesData.data[0]; // Use first page
+      accountData = {
+        platform: "Facebook",
+        username: page.name,
+        accessToken: page.access_token,
+      };
+    } else {
+      return res.status(400).json({ message: "Invalid callback parameters" });
+    }
+
+    // Update user's socialMediaAccounts
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { socialMediaAccounts: accountData } },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Clean up temporary oauth data
+    await User.updateOne({ _id: userId }, { $unset: { twitter_oauth: "" } });
+
+    // Redirect to frontend success page
+    res.redirect("http://localhost:3000/social-media-success");
+  } catch (error) {
+    res.status(500).json({ message: `Error handling callback: ${error.message}` });
   }
-
-  const accessToken = tokenData.access_token;
-  const instagramUserId = tokenData.user_id;
-
-  // Fetch username using Instagram Graph API
-  const userResponse = await fetch(
-    `https://graph.instagram.com/${instagramUserId}?fields=username&access_token=${accessToken}`
-  );
-  const userData = await userResponse.json();
-  if (userData.error) {
-    return res.status(400).json({ message: userData.error.message });
-  }
-
-  accountData = {
-    platform: "Instagram",
-    username: userData.username,
-    accessToken,
-  };
-} else if (platform === "Facebook" && code) {
-  // Exchange code for Facebook access token
-  const appId = process.env.FACEBOOK_APP_ID;
-  const appSecret = process.env.FACEBOOK_APP_SECRET;
-  const redirectUri = process.env.FACEBOOK_CALLBACK_URL;
-
-  const tokenResponse = await fetch(
-    `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
-  );
-
-  const tokenData = await tokenResponse.json();
-  if (tokenData.error) {
-    return res.status(400).json({ message: tokenData.error.message });
-  }
-
-  const accessToken = tokenData.access_token;
-
-  // Fetch user's pages to get page username
-  const pagesResponse = await fetch(
-    `https://graph.facebook.com/v18.0/me/accounts?access_token=${accessToken}`
-  );
-  const pagesData = await pagesResponse.json();
-  if (pagesData.error || !pagesData.data.length) {
-    return res.status(400).json({ message: "No pages found or error" });
-  }
-
-  const page = pagesData.data[0]; // Use first page
-  accountData = {
-    platform: "Facebook",
-    username: page.name,
-    accessToken: page.access_token,
-  };
-} else {
-  return res.status(400).json({ message: "Invalid callback parameters" });
-}
-
-// Update user's socialMediaAccounts
-const updatedUser = await User.findByIdAndUpdate(
-  userId,
-  { $push: { socialMediaAccounts: accountData } },
-  { new: true }
-);
-if (!updatedUser) {
-  return res.status(404).json({ message: "User not found" });
-}
-
-// Clean up temporary oauth data
-await User.updateOne({ _id: userId }, { $unset: { twitter_oauth: "" } });
-
-// Redirect to frontend success page
-res.redirect("http://localhost:3000/social-media-success");
-} catch (error) {
-res.status(500).json({ message: `Error handling callback: ${error.message}` });
-}
 };
 
 // Controller: Remove a social media account
@@ -490,3 +509,354 @@ try {
   res.status(500).json({ message: `Error fetching users: ${error.message}` });
 }
 };
+
+
+// import User from "../models/userModel.js";
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+// import dotenv from "dotenv";
+// import fetch from "node-fetch";
+// import crypto from "crypto";
+// import { TwitterApi } from "twitter-api-v2";
+
+// dotenv.config();
+
+// // Initialize Twitter client
+// const twitterClient = new TwitterApi({
+//   clientId: process.env.TWITTER_API_KEY,
+//   clientSecret: process.env.TWITTER_API_SECRET,
+// });
+
+// // Controller: Register a new user
+// export const registerUser = async (req, res) => {
+//   try {
+//     const { email, password, name } = req.body;
+//     if (!email || !password || !name) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+//     const existingUser = await User.findByEmail(email);
+//     if (existingUser) {
+//       return res.status(400).json({ message: "User already exists" });
+//     }
+//     const hashedPassword = await bcrypt.hash(password, 8);
+//     const userData = { email, password: hashedPassword, name };
+//     const user = await User.createUser(userData);
+//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+//     res.status(201).json({
+//       token,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         name: user.name,
+//         socialMediaAccounts: user.socialMediaAccounts,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error registering user: ${error.message}` });
+//   }
+// };
+
+// // Controller: Login a user
+// export const loginUser = async (req, res) => {
+//   try {
+//     console.log(req.body);
+//     const { email, password } = req.body;
+//     if (!email || !password) {
+//       return res.status(400).json({ message: "Email and password are required" });
+//     }
+//     const user = await User.findByEmail(email);
+//     if (!user) {
+//       console.log(user);
+//       return res.status(401).json({ message: "Invalid email or password" });
+//     }
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       console.log(user);
+//       return res.status(401).json({ message: "Invalid email or password" });
+//     }
+//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+//     res.status(201).json({
+//       token,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         name: user.name,
+//         socialMediaAccounts: user.socialMediaAccounts,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error logging in user: ${error.message}` });
+//   }
+// };
+
+// // Controller: Get user details by ID
+// export const getUserById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const user = await User.findById(id);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     res.json({
+//       id: user._id,
+//       email: user.email,
+//       name: user.name,
+//       socialMediaAccounts: user.socialMediaAccounts,
+//       createdAt: user.createdAt,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error fetching user: ${error.message}` });
+//   }
+// };
+
+// // Controller: Update user details
+// export const updateUser = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { email, name } = req.body;
+//     if (!email && !name) {
+//       return res.status(400).json({ message: "No fields provided for update" });
+//     }
+//     const updateData = {};
+//     if (email) updateData.email = email;
+//     if (name) updateData.name = name;
+//     const updatedUser = await User.updateUser(id, updateData);
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     res.json({
+//       id: updatedUser._id,
+//       email: updatedUser.email,
+//       name: updatedUser.name,
+//       socialMediaAccounts: updatedUser.socialMediaAccounts,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error updating user: ${error.message}` });
+//   }
+// };
+
+// // Controller: Add a social media account
+// export const addSocialMediaAccount = async (req, res) => {
+//   try {
+//     const { userId, platform } = req.body;
+//     if (!userId || !platform) {
+//       return res.status(400).json({ message: "User ID and platform are required" });
+//     }
+//     const validPlatforms = ["Twitter", "Instagram", "Facebook"];
+//     if (!validPlatforms.includes(platform)) {
+//       return res.status(400).json({ message: "Invalid platform" });
+//     }
+//     const state = crypto.randomBytes(16).toString("hex");
+//     let oauthUrl;
+//     if (platform === "Twitter") {
+//       oauthUrl = `/api/users/initiate-twitter-oauth?userId=${userId}&state=${state}`;
+//     } else if (platform === "Instagram") {
+//       const appId = process.env.INSTAGRAM_APP_ID;
+//       const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
+//       oauthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&state=${state}&scope=instagram_basic,instagram_manage_insights`;
+//     } else if (platform === "Facebook") {
+//       const appId = process.env.FACEBOOK_APP_ID;
+//       const redirectUri = process.env.FACEBOOK_CALLBACK_URL;
+//       oauthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&state=${state}&scope=pages_show_list,pages_read_engagement`;
+//     }
+//     res.json({ oauthUrl });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error initiating OAuth: ${error.message}` });
+//   }
+// };
+
+// // Controller: Initiate Twitter OAuth
+// export const initiateTwitterOAuth = async (req, res) => {
+//   try {
+//     const { userId, state } = req.query;
+//     if (!userId || !state) {
+//       return res.status(400).json({ message: "User ID and state are required" });
+//     }
+
+//     // Log the raw query to debug
+//     console.log("Raw req.query:", req.query);
+//     // Ensure userId is a string
+//     const userIdStr = String(userId);
+//     console.log("Converted userId:", userIdStr);
+//     // Validate userId exists
+//     const user = await User.findById(userIdStr);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     // Generate a code verifier and challenge for PKCE
+//     const codeVerifier = crypto.randomBytes(32).toString("hex");
+//     const codeChallenge = crypto
+//       .createHash("sha256")
+//       .update(codeVerifier)
+//       .digest("base64")
+//       .replace(/\+/g, "-")
+//       .replace(/\//g, "_")
+//       .replace(/=+$/, "");
+//     // Generate OAuth 2.0 URL for Twitter
+//     const authUrl = twitterClient.generateOAuth2AuthLink( process.env.TWITTER_CALLBACK_URL,
+//             {
+//               scope: ["tweet.read", "users.read", "offline.access"],
+//               state,
+//               code_challenge: codeChallenge,
+//               code_challenge_method: "S256",
+//             });
+//     // Store userId, state, and codeVerifier in database
+//     await User.updateOne(
+//             { _id: userId },
+//             {
+//               $set: {
+//                 twitter_oauth: { state, userId, codeVerifier },
+//               },
+//             },
+//             { upsert: true }
+            
+//           );
+//     console.log(`Stored state: ${state} for userId: ${userId}`);
+//     // Redirect to Twitter's auth URL
+//     res.redirect(authUrl);
+//   } catch (error) {
+//     res.status(500).json({ message: `Error initiating Twitter OAuth: ${error.message}` });
+//   }
+// };
+
+// // Controller: Handle social media callback
+// export const handleSocialCallback = async (req, res) => {
+//   try {
+//     const { state, code, error, error_description } = req.query;
+//     if (error) {
+//       return res.status(400).json({ message: `OAuth error: ${error_description || error}` });
+//     }
+//     if (!state) {
+//       return res.status(400).json({ message: "Missing state parameter" });
+//     }
+//     // Find user by state
+//     const user = await User.findOne({ "twitter_oauth.state": state });
+//     if (!user || !user.twitter_oauth) {
+//       console.log(`State mismatch: Queried ${state}, found ${user ? user.twitter_oauth?.state : "null"}`);
+//       return res.status(400).json({ message: "Invalid state or user not found" });
+//     }
+//     const userId = user.twitter_oauth.userId;
+//     const codeVerifier = user.twitter_oauth.codeVerifier;
+//     let platform = "Twitter";
+//     let accountData;
+//     if (platform === "Twitter" && code) {
+//       const tokenResponse = await twitterClient.loginWithOAuth2({
+//         code,
+//         codeVerifier,
+//         redirectUri: process.env.TWITTER_CALLBACK_URL,
+//       });
+//       const accessToken = tokenResponse.accessToken;
+//       const client = new TwitterApi(accessToken);
+//       const userInfo = await client.v2.me({ "user.fields": "username" });
+//       const username = userInfo.data.username;
+//       accountData = { platform: "Twitter", username, accessToken };
+//     } else if (platform === "Instagram" && code) {
+//       const appId = process.env.INSTAGRAM_APP_ID;
+//       const appSecret = process.env.INSTAGRAM_APP_SECRET;
+//       const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
+//       const tokenResponse = await fetch(
+//         `https://api.instagram.com/oauth/access_token`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//           body: new URLSearchParams({
+//             client_id: appId,
+//             client_secret: appSecret,
+//             grant_type: "authorization_code",
+//             redirect_uri: redirectUri,
+//             code,
+//           }),
+//         }
+//       );
+//       const tokenData = await tokenResponse.json();
+//       if (tokenData.error) {
+//         return res.status(400).json({ message: tokenData.error.message });
+//       }
+//       const accessToken = tokenData.access_token;
+//       const instagramUserId = tokenData.user_id;
+//       const userResponse = await fetch(
+//         `https://graph.instagram.com/${instagramUserId}?fields=username&access_token=${accessToken}`
+//       );
+//       const userData = await userResponse.json();
+//       if (userData.error) {
+//         return res.status(400).json({ message: userData.error.message });
+//       }
+//       accountData = { platform: "Instagram", username: userData.username, accessToken };
+//     } else if (platform === "Facebook" && code) {
+//       const appId = process.env.FACEBOOK_APP_ID;
+//       const appSecret = process.env.FACEBOOK_APP_SECRET;
+//       const redirectUri = process.env.FACEBOOK_CALLBACK_URL;
+//       const tokenResponse = await fetch(
+//         `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
+//       );
+//       const tokenData = await tokenResponse.json();
+//       if (tokenData.error) {
+//         return res.status(400).json({ message: tokenData.error.message });
+//       }
+//       const accessToken = tokenData.access_token;
+//       const pagesResponse = await fetch(
+//         `https://graph.facebook.com/v18.0/me/accounts?access_token=${accessToken}`
+//       );
+//       const pagesData = await pagesResponse.json();
+//       if (pagesData.error || !pagesData.data.length) {
+//         return res.status(400).json({ message: "No pages found or error" });
+//       }
+//       const page = pagesData.data[0];
+//       accountData = { platform: "Facebook", username: page.name, accessToken: page.access_token };
+//     } else {
+//       return res.status(400).json({ message: "Invalid callback parameters" });
+//     }
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { $push: { socialMediaAccounts: accountData } },
+//       { new: true }
+//     );
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     await User.updateOne({ _id: userId }, { $unset: { twitter_oauth: "" } });
+//     res.redirect("http://localhost:3000/social-media-success");
+//   } catch (error) {
+//     res.status(500).json({ message: `Error handling callback: ${error.message}` });
+//   }
+// };
+
+// // Controller: Remove a social media account
+// export const removeSocialMediaAccount = async (req, res) => {
+//   try {
+//     const { userId, platform, username } = req.body;
+//     if (!userId || !platform || !username) {
+//       return res.status(400).json({ message: "User ID, platform, and username are required" });
+//     }
+//     const updatedUser = await User.removeSocialMediaAccount(userId, platform, username);
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User or account not found" });
+//     }
+//     res.json({
+//       id: updatedUser._id,
+//       email: updatedUser.email,
+//       name: updatedUser.name,
+//       socialMediaAccounts: updatedUser.socialMediaAccounts,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error removing account: ${error.message}` });
+//   }
+// };
+
+// // Controller: Get all users (admin only)
+// export const getAllUsers = async (req, res) => {
+//   try {
+//     const users = await User.getAllUsers();
+//     res.json(
+//       users.map((user) => ({
+//         id: user._id,
+//         email: user.email,
+//         name: user.name,
+//         socialMediaAccounts: user.socialMediaAccounts,
+//         createdAt: user.createdAt,
+//       }))
+//     );
+//   } catch (error) {
+//     res.status(500).json({ message: `Error fetching users: ${error.message}` });
+//   }
+// };
