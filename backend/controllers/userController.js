@@ -11,14 +11,55 @@ import { TwitterApi } from "twitter-api-v2";
 // Load environment variables from .env file
 dotenv.config();
 
+// Validate environment variables
+if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_SECRET) {
+  console.error("Error: TWITTER_API_KEY or TWITTER_API_SECRET is missing in .env");
+  process.exit(1);
+}
+if (!process.env.TWITTER_CALLBACK_URL) {
+  console.error("Error: TWITTER_CALLBACK_URL is missing in .env");
+  process.exit(1);
+}
+
 // Log client credentials for debugging (remove in production)
 console.log("TWITTER_API_KEY:", process.env.TWITTER_API_KEY);
 console.log("TWITTER_API_SECRET:", process.env.TWITTER_API_SECRET ? "[REDACTED]" : "MISSING");
+console.log("TWITTER_CALLBACK_URL:", process.env.TWITTER_CALLBACK_URL);
+
+// Generate and log Authorization header for debugging
+const authHeader = `Basic ${Buffer.from(
+  `${process.env.TWITTER_API_KEY}:${process.env.TWITTER_API_SECRET}`
+).toString("base64")}`;
+console.log("Authorization Header (partial):", authHeader.substring(0, 10) + "...");
+
 // Initialize Twitter client
 const twitterClient = new TwitterApi({
-clientId: process.env.TWITTER_API_KEY,
-clientSecret: process.env.TWITTER_API_SECRET,
+  clientId: process.env.TWITTER_API_KEY,
+  clientSecret: process.env.TWITTER_API_SECRET,
 });
+
+// Function to generate a valid PKCE code verifier
+function generateCodeVerifier() {
+  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  const length = 64; // Between 43 and 128 characters
+  let result = "";
+  const bytes = crypto.randomBytes(length);
+  for (let i = 0; i < length; i++) {
+    result += charset[bytes[i] % charset.length];
+  }
+  return result;
+}
+
+// Function to generate code challenge from code verifier
+function generateCodeChallenge(codeVerifier) {
+  return crypto
+    .createHash("sha256")
+    .update(codeVerifier)
+    .digest("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
 
 //Controller: Register a new user
 export const registerUser = async (req, res) =>{
@@ -242,28 +283,88 @@ res.status(500).json({ message: `Error initiating OAuth: ${error.message}` });
 }
 };
 
+// // Controller: Initiate Twitter OAuth
+// export const initiateTwitterOAuth = async (req, res) => {
+//   try {
+//     const { userId, state } = req.query;
+
+//     if (!userId || !state) {
+//       return res.status(400).json({ message: "User ID and state are required" });
+//     }
+//     // Log the raw query to debug
+//     console.log("Raw req.query:", req.query);
+
+//     // Generate a code verifier and challenge for PKCE
+//     const codeVerifier = crypto.randomBytes(32).toString("hex");
+//     const codeChallenge = crypto
+//       .createHash("sha256")
+//       .update(codeVerifier)
+//       .digest("base64")
+//       .replace(/\+/g, "-")
+//       .replace(/\//g, "_")
+//       .replace(/=+$/, "");
+
+//     // Generate OAuth 2.0 URL for Twitter using generateOAuth2AuthLink
+//     const authLink = twitterClient.generateOAuth2AuthLink(
+//       process.env.TWITTER_CALLBACK_URL,
+//       {
+//         scope: ["tweet.read", "users.read", "offline.access"],
+//         state,
+//         code_challenge: codeChallenge,
+//         code_challenge_method: "S256",
+//       }
+//     );
+
+//     // Store userId, state, and codeVerifier in database for callback verification
+//     await User.updateOne(
+//       { _id: userId },
+//       {
+//         $set: {
+//           twitter_oauth: { state, userId, codeVerifier },
+//         },
+//       },
+//       { upsert: true }
+//     );
+
+//     // Redirect to Twitter's auth URL
+//     res.redirect(authLink.url);
+//   } catch (error) {
+//     res.status(500).json({ message: `Error initiating Twitter OAuth: ${error.message}` });
+//   }
+// };
+
 // Controller: Initiate Twitter OAuth
 export const initiateTwitterOAuth = async (req, res) => {
   try {
     const { userId, state } = req.query;
-
     if (!userId || !state) {
       return res.status(400).json({ message: "User ID and state are required" });
     }
-    // Log the raw query to debug
-    console.log("Raw req.query:", req.query);
+    console.log("Initiate Twitter OAuth - Raw req.query:", req.query);
+
+    // Validate user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     // Generate a code verifier and challenge for PKCE
-    const codeVerifier = crypto.randomBytes(32).toString("hex");
-    const codeChallenge = crypto
-      .createHash("sha256")
-      .update(codeVerifier)
-      .digest("base64")
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = generateCodeChallenge(codeVerifier);
 
-    // Generate OAuth 2.0 URL for Twitter using generateOAuth2AuthLink
+    console.log("Generated PKCE:", { codeVerifier, codeChallenge });
+
+    // // Generate a code verifier and challenge for PKCE
+    // const codeVerifier = crypto.randomBytes(32).toString("hex");
+    // const codeChallenge = crypto
+    //   .createHash("sha256")
+    //   .update(codeVerifier)
+    //   .digest("base64")
+    //   .replace(/\+/g, "-")
+    //   .replace(/\//g, "_")
+    //   .replace(/=+$/, "");
+
+    // Generate OAuth 2.0 URL for Twitter
     const authLink = twitterClient.generateOAuth2AuthLink(
       process.env.TWITTER_CALLBACK_URL,
       {
@@ -274,7 +375,7 @@ export const initiateTwitterOAuth = async (req, res) => {
       }
     );
 
-    // Store userId, state, and codeVerifier in database for callback verification
+    // Store userId, state, and codeVerifier in database
     await User.updateOne(
       { _id: userId },
       {
@@ -284,19 +385,181 @@ export const initiateTwitterOAuth = async (req, res) => {
       },
       { upsert: true }
     );
+    console.log(`Stored OAuth data: state=${state}, userId=${userId}, codeVerifier=${codeVerifier}`);
 
     // Redirect to Twitter's auth URL
     res.redirect(authLink.url);
   } catch (error) {
+    console.error("Error initiating Twitter OAuth:", error);
     res.status(500).json({ message: `Error initiating Twitter OAuth: ${error.message}` });
   }
 };
 
+// // Controller: Handle social media callback
+// export const handleSocialCallback = async (req, res) => {
+//   try {
+//     // Extract query parameters
+//     const { state, code, error, error_description } = req.query;
+
+//     // Handle OAuth errors
+//     if (error) {
+//       return res.status(400).json({ message: `OAuth error: ${error_description || error}` });
+//     }
+
+//     // Validate state
+//     if (!state) {
+//       return res.status(400).json({ message: "Missing state parameter" });
+//     }
+
+//     console.log("Callback state from query:", state);
+//     // Find user by state
+//     const user = await User.findOne({ "twitter_oauth.state": state });
+//     console.log("Found user twitter_oauth:", user ? user.twitter_oauth : "null");
+//     if (!user || !user.twitter_oauth) {
+//       return res.status(400).json({ message: "Invalid state or user not found" });
+//     }
+
+//     const userId = String(user.twitter_oauth.userId);
+//     console.log("Callback userId:", userId, "Type:", typeof userId);
+//     const codeVerifier = user.twitter_oauth.codeVerifier;
+//     console.log("Callback codeVerifier:", codeVerifier);
+
+//     let platform = "Twitter"; // Default to Twitter for this flow
+//     let accountData;
+
+//     if (platform === "Twitter" && code) {
+//       // Log details for debugging
+//       console.log("Callback code:", code);
+//       console.log("Callback redirectUri:", process.env.TWITTER_CALLBACK_URL);
+//       console.log("Client ID used:", process.env.TWITTER_API_KEY);
+//       // Exchange code for access token
+//       try {
+//         const tokenResponse = await twitterClient.loginWithOAuth2({
+//           code,
+//           codeVerifier,
+//           redirectUri: process.env.TWITTER_CALLBACK_URL,
+//         });
+//         const accessToken = tokenResponse.accessToken;
+//         console.log("Access token received:", accessToken);
+
+//         // Fetch user info
+//         const client = new TwitterApi(accessToken);
+//         const userInfo = await client.v2.me({ "user.fields": "username" });
+//         const username = userInfo.data.username;
+
+//         accountData = {
+//           platform: "Twitter",
+//           username,
+//           accessToken,
+//         };
+//       } catch (tokenError) {
+//         console.log("Twitter token error details:", tokenError.response?.data || tokenError);
+//         throw new Error(`Twitter token exchange failed: ${tokenError.message}`);
+//       }
+//     } else if (platform === "Instagram" && code) {
+//       // Exchange code for Instagram access token
+//       const appId = process.env.INSTAGRAM_APP_ID;
+//       const appSecret = process.env.INSTAGRAM_APP_SECRET;
+//       const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
+
+//       const tokenResponse = await fetch(
+//         `https://api.instagram.com/oauth/access_token`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//           body: new URLSearchParams({
+//             client_id: appId,
+//             client_secret: appSecret,
+//             grant_type: "authorization_code",
+//             redirect_uri: redirectUri,
+//             code,
+//           }),
+//         }
+//       );
+
+//       const tokenData = await tokenResponse.json();
+//       if (tokenData.error) {
+//         return res.status(400).json({ message: tokenData.error.message });
+//       }
+
+//       const accessToken = tokenData.access_token;
+//       const instagramUserId = tokenData.user_id;
+
+//       // Fetch username using Instagram Graph API
+//       const userResponse = await fetch(
+//         `https://graph.instagram.com/${instagramUserId}?fields=username&access_token=${accessToken}`
+//       );
+//       const userData = await userResponse.json();
+//       if (userData.error) {
+//         return res.status(400).json({ message: userData.error.message });
+//       }
+
+//       accountData = {
+//         platform: "Instagram",
+//         username: userData.username,
+//         accessToken,
+//       };
+//     } else if (platform === "Facebook" && code) {
+//       // Exchange code for Facebook access token
+//       const appId = process.env.FACEBOOK_APP_ID;
+//       const appSecret = process.env.FACEBOOK_APP_SECRET;
+//       const redirectUri = process.env.FACEBOOK_CALLBACK_URL;
+
+//       const tokenResponse = await fetch(
+//         `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
+//       );
+
+//       const tokenData = await tokenResponse.json();
+//       if (tokenData.error) {
+//         return res.status(400).json({ message: tokenData.error.message });
+//       }
+
+//       const accessToken = tokenData.access_token;
+
+//       // Fetch user's pages to get page username
+//       const pagesResponse = await fetch(
+//         `https://graph.facebook.com/v18.0/me/accounts?access_token=${accessToken}`
+//       );
+//       const pagesData = await pagesResponse.json();
+//       if (pagesData.error || !pagesData.data.length) {
+//         return res.status(400).json({ message: "No pages found or error" });
+//       }
+
+//       const page = pagesData.data[0]; // Use first page
+//       accountData = {
+//         platform: "Facebook",
+//         username: page.name,
+//         accessToken: page.access_token,
+//       };
+//     } else {
+//       return res.status(400).json({ message: "Invalid callback parameters" });
+//     }
+
+//     // Update user's socialMediaAccounts
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { $push: { socialMediaAccounts: accountData } },
+//       { new: true }
+//     );
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Clean up temporary oauth data
+//     await User.updateOne({ _id: userId }, { $unset: { twitter_oauth: "" } });
+
+//     // Redirect to frontend success page
+//     res.redirect("http://localhost:3000/social-media-success");
+//   } catch (error) {
+//     res.status(500).json({ message: `Error handling callback: ${error.message}` });
+//   }
+// };
+
 // Controller: Handle social media callback
 export const handleSocialCallback = async (req, res) => {
   try {
-    // Extract query parameters
-    const { state, code, error, error_description } = req.query;
+    const { state, code, error, error_description} = req.query;
+    console.log("Callback - Raw req.query:", req.query);
 
     // Handle OAuth errors
     if (error) {
@@ -304,11 +567,10 @@ export const handleSocialCallback = async (req, res) => {
     }
 
     // Validate state
-    if (!state) {
-      return res.status(400).json({ message: "Missing state parameter" });
+    if (!state || !code) {
+      return res.status(400).json({ message: "Missing state or code parameter" });
     }
 
-    console.log("Callback state from query:", state);
     // Find user by state
     const user = await User.findOne({ "twitter_oauth.state": state });
     console.log("Found user twitter_oauth:", user ? user.twitter_oauth : "null");
@@ -316,33 +578,41 @@ export const handleSocialCallback = async (req, res) => {
       return res.status(400).json({ message: "Invalid state or user not found" });
     }
 
-    const userId = String(user.twitter_oauth.userId);
-    console.log("Callback userId:", userId, "Type:", typeof userId);
+    const storedUserId = String(user.twitter_oauth.userId);
     const codeVerifier = user.twitter_oauth.codeVerifier;
+    console.log("Callback userId:", storedUserId, "Type:", typeof storedUserId);
     console.log("Callback codeVerifier:", codeVerifier);
+    console.log("Callback code:", code);
+    console.log("Callback redirectUri:", process.env.TWITTER_CALLBACK_URL);
 
-    let platform = "Twitter"; // Default to Twitter for this flow
+    let platform = "Twitter";
     let accountData;
 
     if (platform === "Twitter" && code) {
-      // Log details for debugging
-      console.log("Callback code:", code);
-      console.log("Callback redirectUri:", process.env.TWITTER_CALLBACK_URL);
-      console.log("Client ID used:", process.env.TWITTER_API_KEY);
-      // Exchange code for access token
       try {
+        // Log token exchange inputs
+        console.log("Initiating Twitter token exchange with inputs:", {
+          code: code.substring(0, 10) + "...",
+          codeVerifier: codeVerifier.substring(0, 10) + "...",
+          redirectUri: process.env.TWITTER_CALLBACK_URL,
+          clientId: process.env.TWITTER_API_KEY,
+        });
+
+        // Attempt token exchange using twitter-api-v2
         const tokenResponse = await twitterClient.loginWithOAuth2({
           code,
           codeVerifier,
           redirectUri: process.env.TWITTER_CALLBACK_URL,
         });
+
         const accessToken = tokenResponse.accessToken;
-        console.log("Access token received:", accessToken);
+        console.log("Access token received:", accessToken.substring(0, 10) + "...");
 
         // Fetch user info
         const client = new TwitterApi(accessToken);
         const userInfo = await client.v2.me({ "user.fields": "username" });
         const username = userInfo.data.username;
+        console.log("Twitter user info:", { username });
 
         accountData = {
           platform: "Twitter",
@@ -350,39 +620,74 @@ export const handleSocialCallback = async (req, res) => {
           accessToken,
         };
       } catch (tokenError) {
-        console.log("Twitter token error details:", tokenError.response?.data || tokenError);
-        throw new Error(`Twitter token exchange failed: ${tokenError.message}`);
+        console.error("Twitter token exchange error:", {
+          message: tokenError.message,
+          response: tokenError.response?.data,
+          stack: tokenError.stack,
+        });
+
+        // Fallback: Manual token exchange to debug
+        console.log("Attempting manual token exchange...");
+        const authHeader = `Basic ${Buffer.from(
+          `${process.env.TWITTER_API_KEY}:${process.env.TWITTER_API_SECRET}`
+        ).toString("base64")}`;
+        const tokenResponse = await fetch("https://api.twitter.com/2/oauth2/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: authHeader,
+          },
+          body: new URLSearchParams({
+            grant_type: "authorization_code",
+            code,
+            redirect_uri: process.env.TWITTER_CALLBACK_URL,
+            client_id: process.env.TWITTER_API_KEY,
+            code_verifier: codeVerifier,
+          }),
+        });
+
+        const tokenData = await tokenResponse.json();
+        if (!tokenResponse.ok) {
+          console.error("Manual token exchange failed:", tokenData);
+          throw new Error(`Manual token exchange failed: ${JSON.stringify(tokenData)}`);
+        }
+
+        const accessToken = tokenData.access_token;
+        console.log("Manual access token received:", accessToken.substring(0, 10) + "...");
+
+        // Fetch user info
+        const client = new TwitterApi(accessToken);
+        const userInfo = await client.v2.me({ "user.fields": "username" });
+        const username = userInfo.data.username;
+        console.log("Twitter user info (manual):", { username });
+
+        accountData = {
+          platform: "Twitter",
+          username,
+          accessToken,
+        };
       }
     } else if (platform === "Instagram" && code) {
-      // Exchange code for Instagram access token
       const appId = process.env.INSTAGRAM_APP_ID;
       const appSecret = process.env.INSTAGRAM_APP_SECRET;
       const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
-
-      const tokenResponse = await fetch(
-        `https://api.instagram.com/oauth/access_token`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            client_id: appId,
-            client_secret: appSecret,
-            grant_type: "authorization_code",
-            redirect_uri: redirectUri,
-            code,
-          }),
-        }
-      );
-
+      const tokenResponse = await fetch(`https://api.instagram.com/oauth/access_token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: appId,
+          client_secret: appSecret,
+          grant_type: "authorization_code",
+          redirect_uri: redirectUri,
+          code,
+        }),
+      });
       const tokenData = await tokenResponse.json();
       if (tokenData.error) {
         return res.status(400).json({ message: tokenData.error.message });
       }
-
       const accessToken = tokenData.access_token;
       const instagramUserId = tokenData.user_id;
-
-      // Fetch username using Instagram Graph API
       const userResponse = await fetch(
         `https://graph.instagram.com/${instagramUserId}?fields=username&access_token=${accessToken}`
       );
@@ -390,30 +695,23 @@ export const handleSocialCallback = async (req, res) => {
       if (userData.error) {
         return res.status(400).json({ message: userData.error.message });
       }
-
       accountData = {
         platform: "Instagram",
         username: userData.username,
         accessToken,
       };
     } else if (platform === "Facebook" && code) {
-      // Exchange code for Facebook access token
       const appId = process.env.FACEBOOK_APP_ID;
       const appSecret = process.env.FACEBOOK_APP_SECRET;
       const redirectUri = process.env.FACEBOOK_CALLBACK_URL;
-
       const tokenResponse = await fetch(
         `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&redirect_uri=${redirectUri}&client_secret=${appSecret}&code=${code}`
       );
-
       const tokenData = await tokenResponse.json();
       if (tokenData.error) {
         return res.status(400).json({ message: tokenData.error.message });
       }
-
       const accessToken = tokenData.access_token;
-
-      // Fetch user's pages to get page username
       const pagesResponse = await fetch(
         `https://graph.facebook.com/v18.0/me/accounts?access_token=${accessToken}`
       );
@@ -421,8 +719,7 @@ export const handleSocialCallback = async (req, res) => {
       if (pagesData.error || !pagesData.data.length) {
         return res.status(400).json({ message: "No pages found or error" });
       }
-
-      const page = pagesData.data[0]; // Use first page
+      const page = pagesData.data[0];
       accountData = {
         platform: "Facebook",
         username: page.name,
@@ -434,7 +731,7 @@ export const handleSocialCallback = async (req, res) => {
 
     // Update user's socialMediaAccounts
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      storedUserId,
       { $push: { socialMediaAccounts: accountData } },
       { new: true }
     );
@@ -443,11 +740,15 @@ export const handleSocialCallback = async (req, res) => {
     }
 
     // Clean up temporary oauth data
-    await User.updateOne({ _id: userId }, { $unset: { twitter_oauth: "" } });
+    await User.updateOne({ _id: storedUserId }, { $unset: { twitter_oauth: "" } });
 
     // Redirect to frontend success page
     res.redirect("http://localhost:3000/social-media-success");
   } catch (error) {
+    console.error("Callback error:", {
+      message: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: `Error handling callback: ${error.message}` });
   }
 };
