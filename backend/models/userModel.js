@@ -45,6 +45,10 @@ const userSchema = new mongoose.Schema({
           type: String,
           trim: true,
         },
+        refreshToken: {
+          type: String,
+          trim: true,
+        },
       },
     ],
     // Twitter OAuth temporary storage
@@ -60,6 +64,11 @@ const userSchema = new mongoose.Schema({
       codeVerifier: {
         type: String,
         trim: true,
+      },
+      platform: {
+        type: String,
+        trim: true,
+        enum: ["Twitter", "Instagram", "Facebook"],
       },
     },
     // CreatedAt field: automatically set to the current date/time

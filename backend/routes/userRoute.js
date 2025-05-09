@@ -1,5 +1,5 @@
 import express from "express";
-import { addSocialMediaAccount, getAllUsers, getUserById, handleSocialCallback, initiateTwitterOAuth, loginUser, registerUser, removeSocialMediaAccount, updateUser } from "../controllers/userController.js";
+import { addSocialMediaAccount, getAllUsers, getUserById, handleSocialCallback, loginUser, registerUser, removeSocialMediaAccount, updateUser } from "../controllers/userController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -25,7 +25,7 @@ router.post("/login",loginUser)
 
 // GET /api/users/initiate-twitter-oauth - Initiate Twitter OAuth
 // http://localhost:5000/api/users/initiate-twitter-oauth
-router.get("/initiate-twitter-oauth", initiateTwitterOAuth);
+// router.get("/initiate-twitter-oauth", initiateTwitterOAuth);
 
 // GET /api/users/social-callback - Handle OAuth callback
 // http://localhost:5000/api/users/social-callback
