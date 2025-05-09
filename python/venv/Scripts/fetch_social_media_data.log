@@ -1,0 +1,187 @@
+2025-05-09 06:59:58,577 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 06:59:58,796 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 06:59:58,796 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 06:59:58,797 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 06:59:58,797 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 06:59:58,797 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 06:59:58,798 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 06:59:58,799 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 06:59:58,799 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 06:59:58,942 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 06:59:59,085 [INFO] Twitter OAuth URL: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=568b6d3d7ad604b10370977c632671ee&code_challenge=KaC8H2CGD7ID38K4VJ9XQtxiec29oNOAwx51QIZKKuk&code_challenge_method=S256
+2025-05-09 06:59:59,086 [DEBUG] Stored OAuth data: state=568b6d3d7ad604b10370977c632671ee, userId=681d3bc086786d5d8bd1905d, codeVerifier=iaGakJhBx3LWcgydZJ4YzhmY3omvwBUZEBLaAsrXQTdeNmN5W5mLsIoww11d3_9t
+2025-05-09 06:59:59,086 [INFO] Please visit this URL to authorize: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=568b6d3d7ad604b10370977c632671ee&code_challenge=KaC8H2CGD7ID38K4VJ9XQtxiec29oNOAwx51QIZKKuk&code_challenge_method=S256
+2025-05-09 06:59:59,086 [INFO] After authorizing, run the script again with state and code
+2025-05-09 07:08:02,433 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 07:08:02,433 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 07:08:02,433 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 07:08:02,434 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 07:08:02,434 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:08:02,434 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 07:08:02,434 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 07:08:02,434 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 07:08:02,434 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 07:08:02,577 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 07:08:02,577 [DEBUG] Generated code_verifier: Od-XocF7hR6tAklzWczNU3Wy7O5i1cclE24p7bppwphH10uUasKVpzmBv-qCsXq0BkpMpgLpedHkgJWQw4HVZQUebG8MYVq6
+2025-05-09 07:08:02,577 [DEBUG] Generated code_challenge: iWeD6D5nREOMA6tvN1yxD16DErVSUJfJBq0JVBU3gK8
+2025-05-09 07:08:02,720 [INFO] Twitter OAuth URL: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=91fe931ea3e782d7aa10d0c010197917&code_challenge=iWeD6D5nREOMA6tvN1yxD16DErVSUJfJBq0JVBU3gK8&code_challenge_method=S256
+2025-05-09 07:08:02,720 [DEBUG] Stored OAuth data: state=91fe931ea3e782d7aa10d0c010197917, userId=681d3bc086786d5d8bd1905d, codeVerifier=Od-XocF7hR6tAklzWczNU3Wy7O5i1cclE24p7bppwphH10uUasKVpzmBv-qCsXq0BkpMpgLpedHkgJWQw4HVZQUebG8MYVq6
+2025-05-09 07:08:02,720 [INFO] Please visit this URL to authorize: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=91fe931ea3e782d7aa10d0c010197917&code_challenge=iWeD6D5nREOMA6tvN1yxD16DErVSUJfJBq0JVBU3gK8&code_challenge_method=S256
+2025-05-09 07:08:02,720 [INFO] After authorizing, run the script again with state and code
+2025-05-09 07:15:05,037 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 07:15:05,037 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 07:15:05,037 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 07:15:05,037 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 07:15:05,037 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:15:05,037 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 07:15:05,037 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 07:15:05,037 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 07:15:05,038 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 07:15:05,183 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 07:15:05,183 [DEBUG] Generated code_verifier: H8uqulDrKOtznLyy3yttLjCjSuXoooI-2YjYMT5avtYJVYEysbXtV5orb2fX_X5NAbpM-hhD1wMEiEWZSF4H2xejpd6nRe30 (length: 96)
+2025-05-09 07:15:05,183 [DEBUG] Generated code_challenge: oWjh3SwpzVxyHGlaJCZosQ2QkKsmQJG1dhOiMEY-Agk (length: 43)
+2025-05-09 07:15:05,183 [DEBUG] Raw redirect_uri: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:15:05,184 [DEBUG] Encoded redirect_uri: http%3A//localhost%3A5000/api/posts/twitter-post-callback
+2025-05-09 07:15:05,353 [DEBUG] Stored OAuth data: state=c99fb7f3f58ee71459e38ba0e47b84cc, userId=681d3bc086786d5d8bd1905d, codeVerifier=H8uqulDrKOtznLyy3yttLjCjSuXoooI-2YjYMT5avtYJVYEysbXtV5orb2fX_X5NAbpM-hhD1wMEiEWZSF4H2xejpd6nRe30
+2025-05-09 07:15:05,354 [INFO] After authorizing, run the script again with state and code
+2025-05-09 07:19:34,110 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 07:19:34,110 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 07:19:34,110 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 07:19:34,110 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 07:19:34,110 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:19:34,111 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 07:19:34,111 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 07:19:34,111 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 07:19:34,111 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 07:19:34,252 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 07:19:34,252 [DEBUG] Generated code_verifier: TcKJloG7HI-48MoEMEEb39Q-rgKYhX27jmPrMh5Ft_geZOSoMnuRfkhZkQo5s1w63C4SkUI_fuu_828XRnZ75w2yaubuXaNA (length: 96)
+2025-05-09 07:19:34,252 [DEBUG] Generated code_challenge: cAkTylyPHJ3siYBlSbhXmubLwlVRFhYvO7FIozzCmuo (length: 43)
+2025-05-09 07:19:34,252 [DEBUG] Raw redirect_uri: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:19:34,252 [DEBUG] Encoded redirect_uri: http%3A//localhost%3A5000/api/posts/twitter-post-callback
+2025-05-09 07:19:34,395 [INFO] Twitter OAuth URL: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=53f012c25a9ae636df82c0f540597aa1&code_challenge=cAkTylyPHJ3siYBlSbhXmubLwlVRFhYvO7FIozzCmuo&code_challenge_method=S256
+2025-05-09 07:19:34,395 [DEBUG] Stored OAuth data: state=53f012c25a9ae636df82c0f540597aa1, userId=681d3bc086786d5d8bd1905d, codeVerifier=TcKJloG7HI-48MoEMEEb39Q-rgKYhX27jmPrMh5Ft_geZOSoMnuRfkhZkQo5s1w63C4SkUI_fuu_828XRnZ75w2yaubuXaNA
+2025-05-09 07:19:34,395 [INFO] Please visit this URL to authorize: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=53f012c25a9ae636df82c0f540597aa1&code_challenge=cAkTylyPHJ3siYBlSbhXmubLwlVRFhYvO7FIozzCmuo&code_challenge_method=S256
+2025-05-09 07:19:34,395 [INFO] After authorizing, run the script again with state and code
+2025-05-09 07:19:45,664 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 07:19:45,664 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 07:19:45,665 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 07:19:45,665 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 07:19:45,665 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:19:45,665 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 07:19:45,665 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 07:19:45,665 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d', '53f012c25a9ae636df82c0f540597aa1', 'E:\\Project Work\\SocialMediaAnalyticsDashboard\\backend\\temp\\oauth_code_53f012c25a9ae636df82c0f540597aa1.txt']
+2025-05-09 07:19:45,666 [DEBUG] Read code from file: NlZKS2FVUz...
+2025-05-09 07:19:45,666 [DEBUG] Handling callback: user_id=681d3bc086786d5d8bd1905d, state=53f012c25a9ae636df82c0f540597aa1, code=NlZKS2FVUz...
+2025-05-09 07:19:45,808 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 07:19:45,808 [DEBUG] Retrieved OAuth data: userId=681d3bc086786d5d8bd1905d, state=53f012c25a9ae636df82c0f540597aa1, codeVerifier=TcKJloG7HI-48MoEMEEb39Q-rgKYhX27jmPrMh5Ft_geZOSoMnuRfkhZkQo5s1w63C4SkUI_fuu_828XRnZ75w2yaubuXaNA
+2025-05-09 07:19:45,808 [DEBUG] Sending token exchange request
+2025-05-09 07:19:46,586 [DEBUG] Token exchange response: {'token_type': 'bearer', 'expires_in': 7200, 'access_token': 'TzVSOWRKcVY5U0JQQm5VS1RFSkxXMWJZbTNSOG0yWXVHSW5pMFJxaXhXSEtrOjE3NDY3NzE1ODc1NDA6MTowOmF0OjE', 'scope': 'users.read tweet.read offline.access', 'refresh_token': 'QjNGQ0pualpHR0JhQm8zOWZoR2wxM0V3NGw4dE5kM3dHbm96UmdXUHpYM09OOjE3NDY3NzE1ODc1NDA6MToxOnJ0OjE'}
+2025-05-09 07:19:46,586 [DEBUG] Access token: TzVSOWRKcV...
+2025-05-09 07:19:46,586 [DEBUG] Refresh token: QjNGQ0pual...
+2025-05-09 07:19:46,587 [DEBUG] Fetching user info
+2025-05-09 07:19:46,762 [DEBUG] User info response: {'data': {'id': '907506902925377536', 'name': 'Yagneshpathak2812', 'username': 'Yagneshpathak28'}}
+2025-05-09 07:19:46,762 [DEBUG] Twitter user ID: 907506902925377536, Username: Yagneshpathak28
+2025-05-09 07:19:46,762 [DEBUG] Fetching tweets
+2025-05-09 07:19:46,981 [DEBUG] Tweets response: {'data': [{'created_at': '2021-05-14T06:21:07.000Z', 'edit_history_tweet_ids': ['1393088969651326981'], 'id': '1393088969651326981', 'entities': {'mentions': [{'start': 3, 'end': 11, 'username': 'ImRaina', 'id': '121044171'}]}, 'text': 'RT @ImRaina: On this auspicious day, wishing peace and prosperity for everyone! May this festival bring good health &amp; positivity all around…', 'public_metrics': {'retweet_count': 1881, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}, {'created_at': '2020-06-21T02:43:50.000Z', 'entities': {'annotations': [{'start': 19, 'end': 29, 'probability': 0.5582, 'type': 'Organization', 'normalized_text': 'CYP2020_NCC'}], 'urls': [{'start': 31, 'end': 54, 'url': 'https://t.co/JRH7moPWgs', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533455737446400/video/1', 'display_url': 'pic.x.com/JRH7moPWgs', 'media_key': '7_1274533379891802112'}], 'hashtags': [{'start': 18, 'end': 30, 'tag': 'CYP2020_NCC'}]}, 'edit_history_tweet_ids': ['1274533455737446400'], 'id': '1274533455737446400', 'text': 'Happy Yoga Day 🇮🇳 #CYP2020_NCC https://t.co/JRH7moPWgs', 'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 4, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}, {'created_at': '2020-06-21T02:42:07.000Z', 'entities': {'annotations': [{'start': 36, 'end': 38, 'probability': 0.6986, 'type': 'Person', 'normalized_text': 'JAY'}, {'start': 46, 'end': 56, 'probability': 0.6891, 'type': 'Organization', 'normalized_text': 'CYP2020_NCC'}], 'urls': [{'start': 58, 'end': 81, 'url': 'https://t.co/z6bnvR6irq', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533026253246464/photo/1', 'display_url': 'pic.x.com/z6bnvR6irq', 'media_key': '3_1274532902731042816'}, {'start': 58, 'end': 81, 'url': 'https://t.co/z6bnvR6irq', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533026253246464/photo/1', 'display_url': 'pic.x.com/z6bnvR6irq', 'media_key': '3_1274532942425935872'}, {'start': 58, 'end': 81, 'url': 'https://t.co/z6bnvR6irq', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533026253246464/photo/1', 'display_url': 'pic.x.com/z6bnvR6irq', 'media_key': '3_1274532994628239363'}], 'hashtags': [{'start': 45, 'end': 57, 'tag': 'CYP2020_NCC'}]}, 'edit_history_tweet_ids': ['1274533026253246464'], 'id': '1274533026253246464', 'text': 'HAPPY INTERNATIONAL YOGA DAY 🇮🇳🇮🇳🇮🇳 JAY HIND #CYP2020_NCC https://t.co/z6bnvR6irq', 'public_metrics': {'retweet_count': 0, 'reply_count': 1, 'like_count': 4, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}, {'created_at': '2020-04-17T15:15:36.000Z', 'edit_history_tweet_ids': ['1251167433152331793'], 'id': '1251167433152331793', 'entities': {'mentions': [{'start': 0, 'end': 13, 'username': 'narendramodi', 'id': '18839785'}]}, 'text': '@narendramodi सर पक्के केले के दाम 20 Rs/ 1kg है सर तो इस हिसाब से 20 kg / 400 Rs सर कहा 17 Rs/20 kg or ये। सर आप से निवेदन है एक बार आप थोड़ा सोचे ..', 'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}, {'created_at': '2020-04-17T15:09:06.000Z', 'edit_history_tweet_ids': ['1251165799110201347'], 'id': '1251165799110201347', 'text': 'किया है वो भी  नहीं हो रहा है सर एक बार आपसे बात होजाये तो अच्छा है।', 'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}, {'created_at': '2020-04-17T15:09:06.000Z', 'edit_history_tweet_ids': ['1251165796941754370'], 'id': '1251165796941754370', 'entities': {'mentions': [{'start': 0, 'end': 13, 'username': 'narendramodi', 'id': '18839785'}]}, 'text': '@narendramodi Jay bharat modi sir .. मे गुजरात के भरूच जिले में स्थित उमल्ला गांव से हू।   मेरे पापा किसान है।   ओर आपसे यहां के किसानों की स्थिति के बारे में बात करना चाहते हैं। यहां के केले पकाने वाले किसानों को बहुत कम दाम मिल रहा है 17Rs/20 kg सर इतने दाम मे तो जितना खर्च', 'public_metrics': {'retweet_count': 0, 'reply_count': 1, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}, {'created_at': '2017-09-25T06:58:57.000Z', 'edit_history_tweet_ids': ['912209791833034752'], 'id': '912209791833034752', 'entities': {'mentions': [{'start': 0, 'end': 10, 'username': 'sachin_rt', 'id': '135421739'}, {'start': 11, 'end': 19, 'username': 'msdhoni', 'id': '92708272'}]}, 'text': '@sachin_rt @msdhoni Right paji👍👍👍👍👍👍👍👍🙌🙌🙌🙌🙌', 'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}}], 'meta': {'result_count': 7, 'newest_id': '1393088969651326981', 'oldest_id': '912209791833034752'}}
+2025-05-09 07:19:47,027 [INFO] Fetched 7 posts
+2025-05-09 07:19:48,319 [INFO] Redirecting to: http://localhost:3000/select-post?userId=681d3bc086786d5d8bd1905d&state=53f012c25a9ae636df82c0f540597aa1
+2025-05-09 07:19:48,321 [INFO] Twitter post fetch completed, redirect to: http://localhost:3000/select-post?userId=681d3bc086786d5d8bd1905d&state=53f012c25a9ae636df82c0f540597aa1
+2025-05-09 07:38:02,551 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 07:38:02,551 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 07:38:02,551 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 07:38:02,551 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 07:38:02,551 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:38:02,552 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 07:38:02,552 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 07:38:02,552 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 07:38:02,552 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 07:38:02,693 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 07:38:02,693 [DEBUG] Generated code_verifier: DK2Uc2meySXWiCC7f2xQfCjbGuzS6vchMtEt-o-RNyrl6BVBL1AH8QzlHE4eC-Q-trxmkaqE3qNCqLLW_8XIXW69zu3m7ubI (length: 96)
+2025-05-09 07:38:02,693 [DEBUG] Generated code_challenge: IQ-eRolQQuqV37VTLddPM0Nxc4IJ5aaRMwYrnfRG7Gg (length: 43)
+2025-05-09 07:38:02,693 [DEBUG] Raw redirect_uri: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:38:02,693 [DEBUG] Encoded redirect_uri: http%3A//localhost%3A5000/api/posts/twitter-post-callback
+2025-05-09 07:38:02,841 [INFO] Twitter OAuth URL: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=752d9ae1dc829a7ec949e59a4ba085a9&code_challenge=IQ-eRolQQuqV37VTLddPM0Nxc4IJ5aaRMwYrnfRG7Gg&code_challenge_method=S256
+2025-05-09 07:38:02,842 [DEBUG] Stored OAuth data: state=752d9ae1dc829a7ec949e59a4ba085a9, userId=681d3bc086786d5d8bd1905d, codeVerifier=DK2Uc2meySXWiCC7f2xQfCjbGuzS6vchMtEt-o-RNyrl6BVBL1AH8QzlHE4eC-Q-trxmkaqE3qNCqLLW_8XIXW69zu3m7ubI
+2025-05-09 07:38:02,842 [INFO] Please visit this URL to authorize: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=752d9ae1dc829a7ec949e59a4ba085a9&code_challenge=IQ-eRolQQuqV37VTLddPM0Nxc4IJ5aaRMwYrnfRG7Gg&code_challenge_method=S256
+2025-05-09 07:38:02,842 [INFO] After authorizing, run the script again with state and code
+2025-05-09 07:38:14,246 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 07:38:14,247 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 07:38:14,247 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 07:38:14,247 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 07:38:14,247 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 07:38:14,247 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 07:38:14,247 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 07:38:14,247 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d', '752d9ae1dc829a7ec949e59a4ba085a9', 'E:\\Project Work\\SocialMediaAnalyticsDashboard\\backend\\temp\\oauth_code_752d9ae1dc829a7ec949e59a4ba085a9.txt']
+2025-05-09 07:38:14,248 [DEBUG] Read code from file: TmVEOVpxcX...
+2025-05-09 07:38:14,248 [DEBUG] Handling callback: user_id=681d3bc086786d5d8bd1905d, state=752d9ae1dc829a7ec949e59a4ba085a9, code=TmVEOVpxcX...
+2025-05-09 07:38:14,389 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 07:38:14,389 [DEBUG] Retrieved OAuth data: userId=681d3bc086786d5d8bd1905d, state=752d9ae1dc829a7ec949e59a4ba085a9, codeVerifier=DK2Uc2meySXWiCC7f2xQfCjbGuzS6vchMtEt-o-RNyrl6BVBL1AH8QzlHE4eC-Q-trxmkaqE3qNCqLLW_8XIXW69zu3m7ubI
+2025-05-09 07:38:14,389 [DEBUG] Sending token exchange request
+2025-05-09 07:38:15,123 [DEBUG] Token exchange response: {'token_type': 'bearer', 'expires_in': 7200, 'access_token': 'OWFsaE04bmZUakdkV3d0MmJaT19lY3FQa01RbUlTYmIxYy13WHFqbEFpVmkzOjE3NDY3NzI2OTU3NDY6MTowOmF0OjE', 'scope': 'users.read tweet.read offline.access', 'refresh_token': 'alBuZTNvLS1udzA3MHJwUlh3WHJ0UXNUTGtqdVM5bDF1UXZuWjgtZnU4eTBiOjE3NDY3NzI2OTU3NDc6MToxOnJ0OjE'}
+2025-05-09 07:38:15,124 [DEBUG] Access token: OWFsaE04bm...
+2025-05-09 07:38:15,124 [DEBUG] Refresh token: alBuZTNvLS...
+2025-05-09 07:38:15,124 [DEBUG] Fetching user info
+2025-05-09 07:38:15,327 [DEBUG] User info response: {'data': {'id': '907506902925377536', 'name': 'Yagneshpathak2812', 'username': 'Yagneshpathak28'}}
+2025-05-09 07:38:15,327 [DEBUG] Twitter user ID: 907506902925377536, Username: Yagneshpathak28
+2025-05-09 07:38:15,328 [DEBUG] Fetching tweets
+2025-05-09 07:38:15,619 [DEBUG] Tweets response: {'data': [{'text': 'RT @ImRaina: On this auspicious day, wishing peace and prosperity for everyone! May this festival bring good health &amp; positivity all around…', 'public_metrics': {'retweet_count': 1881, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'id': '1393088969651326981', 'edit_history_tweet_ids': ['1393088969651326981'], 'entities': {'mentions': [{'start': 3, 'end': 11, 'username': 'ImRaina', 'id': '121044171'}]}, 'created_at': '2021-05-14T06:21:07.000Z'}, {'text': 'Happy Yoga Day 🇮🇳 #CYP2020_NCC https://t.co/JRH7moPWgs', 'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 4, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'id': '1274533455737446400', 'entities': {'hashtags': [{'start': 18, 'end': 30, 'tag': 'CYP2020_NCC'}], 'annotations': [{'start': 19, 'end': 29, 'probability': 0.5582, 'type': 'Organization', 'normalized_text': 'CYP2020_NCC'}], 'urls': [{'start': 31, 'end': 54, 'url': 'h... (truncated for logging)
+2025-05-09 07:38:15,652 [INFO] Fetched 7 posts
+2025-05-09 07:38:16,931 [INFO] Redirecting to: http://localhost:3000/select-post?userId=681d3bc086786d5d8bd1905d&state=752d9ae1dc829a7ec949e59a4ba085a9
+2025-05-09 07:38:16,934 [INFO] Twitter post fetch completed, redirect to: http://localhost:3000/select-post?userId=681d3bc086786d5d8bd1905d&state=752d9ae1dc829a7ec949e59a4ba085a9
+2025-05-09 08:05:45,626 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 08:05:45,626 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 08:05:45,627 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 08:05:45,627 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 08:05:45,627 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 08:05:45,627 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 08:05:45,628 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 08:05:45,628 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 08:05:45,628 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 08:05:45,776 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 08:05:45,777 [DEBUG] Generated code_verifier: FdIa6hfJo1fwBDxradjQnQGmfsHxGXzMk-XnRExAJJx6mGOu1hxTmehyxVNJL-y6676EBAXF7ZsFS3uhGiZYu6wfT_lk0iFn (length: 96)
+2025-05-09 08:05:45,777 [DEBUG] Generated code_challenge: taAQDZeQp_fUVpTzrkgCIwLnJfhz4gxKdo-6XoEGfcA (length: 43)
+2025-05-09 08:05:45,777 [DEBUG] Raw redirect_uri: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 08:05:45,777 [DEBUG] Encoded redirect_uri: http%3A//localhost%3A5000/api/posts/twitter-post-callback
+2025-05-09 08:05:45,927 [INFO] Twitter OAuth URL: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=dfd266accb5303e20ba3a3f89c99e43d&code_challenge=taAQDZeQp_fUVpTzrkgCIwLnJfhz4gxKdo-6XoEGfcA&code_challenge_method=S256
+2025-05-09 08:05:45,927 [DEBUG] Stored OAuth data: state=dfd266accb5303e20ba3a3f89c99e43d, userId=681d3bc086786d5d8bd1905d, codeVerifier=FdIa6hfJo1fwBDxradjQnQGmfsHxGXzMk-XnRExAJJx6mGOu1hxTmehyxVNJL-y6676EBAXF7ZsFS3uhGiZYu6wfT_lk0iFn
+2025-05-09 08:05:45,928 [INFO] Please visit this URL to authorize: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=dfd266accb5303e20ba3a3f89c99e43d&code_challenge=taAQDZeQp_fUVpTzrkgCIwLnJfhz4gxKdo-6XoEGfcA&code_challenge_method=S256
+2025-05-09 08:05:45,928 [INFO] After authorizing, run the script again with state and code
+2025-05-09 08:12:29,414 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 08:12:29,414 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 08:12:29,414 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 08:12:29,414 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 08:12:29,414 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 08:12:29,414 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 08:12:29,414 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 08:12:29,414 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d']
+2025-05-09 08:12:29,414 [DEBUG] Initiating Twitter post fetch for user_id: 681d3bc086786d5d8bd1905d
+2025-05-09 08:12:29,562 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 08:12:29,562 [DEBUG] Generated code_verifier: uJlxxKWLFhkWQtLlUdnSyXPweFVJczsfUwRatnLSp7PLngLBnayX0ROJn_iA9Y16wfyjoBTfwrsj1ObgORagxR5qMyViF5mL (length: 96)
+2025-05-09 08:12:29,562 [DEBUG] Generated code_challenge: 84uwHjXICPIdEUhMXjqDRYg7hugBgh7ixfbhLbmI5Fw (length: 43)
+2025-05-09 08:12:29,562 [DEBUG] Raw redirect_uri: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 08:12:29,562 [DEBUG] Encoded redirect_uri: http%3A//localhost%3A5000/api/posts/twitter-post-callback
+2025-05-09 08:12:29,711 [DEBUG] Stored OAuth data: state=7ebfc4e8ea4bceec6c6cec246d5c62df, userId=681d3bc086786d5d8bd1905d, codeVerifier=uJlxxKWLFhkWQtLlUdnSyXPweFVJczsfUwRatnLSp7PLngLBnayX0ROJn_iA9Y16wfyjoBTfwrsj1ObgORagxR5qMyViF5mL
+2025-05-09 08:12:29,712 [INFO] Twitter OAuth URL: https://twitter.com/i/oauth2/authorize?response_type=code&client_id=UlNqUG1rMHd5VVNTTTVXcm52c1Y6MTpjaQ&redirect_uri=http%3A//localhost%3A5000/api/posts/twitter-post-callback&scope=tweet.read%20users.read%20offline.access&state=7ebfc4e8ea4bceec6c6cec246d5c62df&code_challenge=84uwHjXICPIdEUhMXjqDRYg7hugBgh7ixfbhLbmI5Fw&code_challenge_method=S256
+2025-05-09 08:12:39,202 [DEBUG] Script directory: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts
+2025-05-09 08:12:39,202 [DEBUG] Looking for .env at: E:\Project Work\SocialMediaAnalyticsDashboard\python\venv\Scripts\.env
+2025-05-09 08:12:39,203 [DEBUG] TWITTER_API_KEY: [SET]
+2025-05-09 08:12:39,203 [DEBUG] TWITTER_API_SECRET: [SET]
+2025-05-09 08:12:39,203 [DEBUG] TWITTER_CALLBACK_URL_POSTS: http://localhost:5000/api/posts/twitter-post-callback
+2025-05-09 08:12:39,203 [DEBUG] MONGO_URI: mongodb+srv://yagneshadmin:admin123@cluster0.qy12l4p.mongodb.net/SocialMediaAnalytics?retryWrites=true&w=majority
+2025-05-09 08:12:39,203 [DEBUG] FRONTEND_URL: http://localhost:3000
+2025-05-09 08:12:39,204 [DEBUG] Command-line arguments: ['E:\\Project Work\\SocialMediaAnalyticsDashboard\\python\\venv\\Scripts\\fetch_social_media_data.py', 'Twitter', '681d3bc086786d5d8bd1905d', '7ebfc4e8ea4bceec6c6cec246d5c62df', 'E:\\Project Work\\SocialMediaAnalyticsDashboard\\backend\\temp\\oauth_code_7ebfc4e8ea4bceec6c6cec246d5c62df.txt']
+2025-05-09 08:12:39,205 [DEBUG] Read code from file: Z09nQm1SSW...
+2025-05-09 08:12:39,205 [DEBUG] Handling callback: user_id=681d3bc086786d5d8bd1905d, state=7ebfc4e8ea4bceec6c6cec246d5c62df, code=Z09nQm1SSW...
+2025-05-09 08:12:39,352 [DEBUG] Found user: vaishanvivyas55@gmail.com
+2025-05-09 08:12:39,353 [DEBUG] Retrieved OAuth data: userId=681d3bc086786d5d8bd1905d, state=7ebfc4e8ea4bceec6c6cec246d5c62df, codeVerifier=uJlxxKWLFhkWQtLlUdnSyXPweFVJczsfUwRatnLSp7PLngLBnayX0ROJn_iA9Y16wfyjoBTfwrsj1ObgORagxR5qMyViF5mL
+2025-05-09 08:12:39,353 [DEBUG] Sending token exchange request
+2025-05-09 08:12:40,140 [DEBUG] Token exchange response: {'token_type': 'bearer', 'expires_in': 7200, 'access_token': 'UHZ1NmxTY0FJQjVYTW56Z0s0RVJ5RFpNSXlYdmttdllZYnR1QzY5dmJfQ0psOjE3NDY3NzQ3NjA3OTE6MToxOmF0OjE', 'scope': 'users.read tweet.read offline.access', 'refresh_token': 'RTBULUhkMXZPOEN5YkpxQkVtd1I5MExJb19UTTFRV0g2aEVsTnFBVFhDYmtFOjE3NDY3NzQ3NjA3OTE6MTowOnJ0OjE'}
+2025-05-09 08:12:40,140 [DEBUG] Access token: UHZ1NmxTY0...
+2025-05-09 08:12:40,140 [DEBUG] Refresh token: RTBULUhkMX...
+2025-05-09 08:12:40,140 [DEBUG] Fetching user info
+2025-05-09 08:12:40,327 [DEBUG] User info response: {'data': {'id': '907506902925377536', 'name': 'Yagneshpathak2812', 'username': 'Yagneshpathak28'}}
+2025-05-09 08:12:40,328 [DEBUG] Twitter user ID: 907506902925377536, Username: Yagneshpathak28
+2025-05-09 08:12:40,328 [DEBUG] Fetching tweets
+2025-05-09 08:12:40,589 [DEBUG] Tweets response: {'data': [{'public_metrics': {'retweet_count': 1881, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['1393088969651326981'], 'entities': {'mentions': [{'start': 3, 'end': 11, 'username': 'ImRaina', 'id': '121044171'}]}, 'created_at': '2021-05-14T06:21:07.000Z', 'text': 'RT @ImRaina: On this auspicious day, wishing peace and prosperity for everyone! May this festival bring good health &amp; positivity all around…', 'id': '1393088969651326981'}, {'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 4, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['1274533455737446400'], 'entities': {'hashtags': [{'start': 18, 'end': 30, 'tag': 'CYP2020_NCC'}], 'urls': [{'start': 31, 'end': 54, 'url': 'https://t.co/JRH7moPWgs', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533455737446400/video/1', 'display_url': 'pic.x.com/JRH7moPWgs', 'media_key': '7_1274533379891802112'}], 'annotations': [{'start': 19, 'end': 29, 'probability': 0.5582, 'type': 'Organization', 'normalized_text': 'CYP2020_NCC'}]}, 'created_at': '2020-06-21T02:43:50.000Z', 'text': 'Happy Yoga Day 🇮🇳 #CYP2020_NCC https://t.co/JRH7moPWgs', 'id': '1274533455737446400'}, {'public_metrics': {'retweet_count': 0, 'reply_count': 1, 'like_count': 4, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['1274533026253246464'], 'entities': {'hashtags': [{'start': 45, 'end': 57, 'tag': 'CYP2020_NCC'}], 'urls': [{'start': 58, 'end': 81, 'url': 'https://t.co/z6bnvR6irq', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533026253246464/photo/1', 'display_url': 'pic.x.com/z6bnvR6irq', 'media_key': '3_1274532902731042816'}, {'start': 58, 'end': 81, 'url': 'https://t.co/z6bnvR6irq', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533026253246464/photo/1', 'display_url': 'pic.x.com/z6bnvR6irq', 'media_key': '3_1274532942425935872'}, {'start': 58, 'end': 81, 'url': 'https://t.co/z6bnvR6irq', 'expanded_url': 'https://x.com/Yagneshpathak28/status/1274533026253246464/photo/1', 'display_url': 'pic.x.com/z6bnvR6irq', 'media_key': '3_1274532994628239363'}], 'annotations': [{'start': 36, 'end': 38, 'probability': 0.6986, 'type': 'Person', 'normalized_text': 'JAY'}, {'start': 46, 'end': 56, 'probability': 0.6891, 'type': 'Organization', 'normalized_text': 'CYP2020_NCC'}]}, 'created_at': '2020-06-21T02:42:07.000Z', 'text': 'HAPPY INTERNATIONAL YOGA DAY 🇮🇳🇮🇳🇮🇳 JAY HIND #CYP2020_NCC https://t.co/z6bnvR6irq', 'id': '1274533026253246464'}, {'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['1251167433152331793'], 'entities': {'mentions': [{'start': 0, 'end': 13, 'username': 'narendramodi', 'id': '18839785'}]}, 'created_at': '2020-04-17T15:15:36.000Z', 'text': '@narendramodi सर पक्के केले के दाम 20 Rs/ 1kg है सर तो इस हिसाब से 20 kg / 400 Rs सर कहा 17 Rs/20 kg or ये। सर आप से निवेदन है एक बार आप थोड़ा सोचे ..', 'id': '1251167433152331793'}, {'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['1251165799110201347'], 'created_at': '2020-04-17T15:09:06.000Z', 'text': 'किया है वो भी  नहीं हो रहा है सर एक बार आपसे बात होजाये तो अच्छा है।', 'id': '1251165799110201347'}, {'public_metrics': {'retweet_count': 0, 'reply_count': 1, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['1251165796941754370'], 'entities': {'mentions': [{'start': 0, 'end': 13, 'username': 'narendramodi', 'id': '18839785'}]}, 'created_at': '2020-04-17T15:09:06.000Z', 'text': '@narendramodi Jay bharat modi sir .. मे गुजरात के भरूच जिले में स्थित उमल्ला गांव से हू।   मेरे पापा किसान है।   ओर आपसे यहां के किसानों की स्थिति के बारे में बात करना चाहते हैं। यहां के केले पकाने वाले किसानों को बहुत कम दाम मिल रहा है 17Rs/20 kg सर इतने दाम मे तो जितना खर्च', 'id': '1251165796941754370'}, {'public_metrics': {'retweet_count': 0, 'reply_count': 0, 'like_count': 0, 'quote_count': 0, 'bookmark_count': 0, 'impression_count': 0}, 'edit_history_tweet_ids': ['912209791833034752'], 'entities': {'mentions': [{'start': 0, 'end': 10, 'username': 'sachin_rt', 'id': '135421739'}, {'start': 11, 'end': 19, 'username': 'msdhoni', 'id': '92708272'}]}, 'created_at': '2017-09-25T06:58:57.000Z', 'text': '@sachin_rt @msdhoni Right paji👍👍👍👍👍👍👍👍🙌🙌🙌🙌🙌', 'id': '912209791833034752'}], 'meta': {'result_count': 7, 'newest_id': '1393088969651326981', 'oldest_id': '912209791833034752'}}
+2025-05-09 08:12:40,607 [INFO] Fetched 7 posts
+2025-05-09 08:12:41,924 [INFO] Redirecting to: http://localhost:3000/select-post?userId=681d3bc086786d5d8bd1905d&state=7ebfc4e8ea4bceec6c6cec246d5c62df

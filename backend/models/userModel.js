@@ -71,6 +71,34 @@ const userSchema = new mongoose.Schema({
         enum: ["Twitter", "Instagram", "Facebook"],
       },
     },
+    twitter_post_oauth: {
+      state: {
+        type: String,
+        trim: true,
+      },
+      userId: {
+        type: String,
+        trim: true,
+      },
+      codeVerifier: {
+        type: String,
+        trim: true,
+      },
+      posts: [
+        {
+          platform: { type: String },
+          postId: { type: String },
+          userId: { type: String },
+          content: { type: String },
+          postedAt: { type: String },
+          likes: { type: Number },
+          comments: { type: Number },
+          shares: { type: Number },
+          hashtags: [{ type: String }],
+          sentiment: { type: String },
+        },
+      ],
+    },
     // CreatedAt field: automatically set to the current date/time
     createdAt: {
       type: Date,
