@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoute.js";
 import postRoutes from "./routes/postRoute.js";
 import surveysRoute from "./routes/surveysRoute.js";
 import analyticsRoute from "./routes/analyticsRoute.js";
+import { startTokenRefreshJob } from "./jobs/refreshTokens.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -17,7 +18,13 @@ const app = express();
 db();
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:5173", // Your frontend URL
+        credentials: true, // Allow credentials (cookies, headers)
+    })
+);
 app.use(express.json());
 
 // Routes
@@ -29,7 +36,10 @@ app.use("/api/surveys", surveysRoute);
 
 app.use("/api/analytics", analyticsRoute);
 
-app.listen(process.env.PORT, () =>{
+// Start token refresh job
+startTokenRefreshJob();
+
+app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
 });
 
