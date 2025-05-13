@@ -313,13 +313,43 @@ export const selectPosts = async (req, res) => {
       });
     }
 
-    // Clear temporary posts
-    await User.updateOne(
-      { _id: userId },
-      { $unset: { twitter_post_oauth: "" } }
-    );
+    // Run the calculate_analytics.py script
+    const __dirname = getDirName(import.meta.url);
+    const pythonScriptPath = path.join(__dirname, '../python/Scripts/calculate_analytics.py');
+    const pythonExecutable = path.join(__dirname, '../python/venv/Scripts/python.exe');
 
-    res.status(200).json({ message: "Posts stored successfully", posts: selectedPosts });
+    console.log('Executing analytics script:', `"${pythonExecutable}" "${pythonScriptPath}"`);
+
+    const pythonProcess = spawn(pythonExecutable, [pythonScriptPath]);
+
+    let stdoutData = '';
+    let stderrData = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      stdoutData += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      stderrData += data.toString();
+    });
+
+    pythonProcess.on('close', async (code) => {
+      if (code !== 0) {
+        console.error('Analytics script error:', stderrData);
+        // Log the error but don't fail the API response
+      } else {
+        console.log('Analytics script output:', stdoutData);
+      }
+
+      // Clear temporary posts
+      await User.updateOne(
+        { _id: userId },
+        { $unset: { twitter_post_oauth: "" } }
+      );
+
+      // Return success response
+      res.status(200).json({ message: "Posts stored and analytics calculated successfully", posts: selectedPosts });
+    });
   } catch (error) {
     console.error("Error selecting posts:", error);
     res.status(500).json({ message: `Error selecting posts: ${error.message}` });
