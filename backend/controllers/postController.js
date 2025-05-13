@@ -603,6 +603,8 @@ export const twitterPostCallback = async (req, res) => {
       if (code === 0 && stdoutData.trim()) {
         const redirectUrl = stdoutData.trim();
         console.log('Redirect URL:', redirectUrl);
+        const userData = await User.findById(userId);
+        console.log("userData",userData)
         if (redirectUrl.startsWith('http://localhost:3000/select-post')) {
           return res.redirect(redirectUrl);
         } else {

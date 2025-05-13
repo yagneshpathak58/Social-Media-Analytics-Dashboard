@@ -30,7 +30,7 @@ export default function Navbar({ toggleSidebar, showAuthModal }: NavbarProps) {
   const handleSignOut = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
-    localStorage.clear();
+    localStorage.removeItem("socialMediaAccounts");
     window.location.href = "/";
   };
 

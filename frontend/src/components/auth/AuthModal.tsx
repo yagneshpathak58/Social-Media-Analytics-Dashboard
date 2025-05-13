@@ -49,6 +49,10 @@ export default function AuthModal({ onLogin }: AuthModalProps) {
       }
       if (data.user) {
         localStorage.setItem("userData", JSON.stringify(data.user));
+        localStorage.setItem(
+          "socialMediaAccounts",
+          JSON.stringify(data.user.socialMediaAccounts)
+        );
       }
 
       toast({

@@ -4,6 +4,7 @@ import { useToast } from "../hooks/use-toast";
 import { apiRequest } from "../lib/queryClient";
 import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
+import { useMutation } from "@tanstack/react-query";
 
 const platforms = ["twitter", "facebook", "linkedin"] as const;
 type Platform = (typeof platforms)[number];
@@ -17,10 +18,13 @@ const platformIcons: Record<Platform, string> = {
 export default function SocialMediaConnectPage() {
   const [activePlatform, setActivePlatform] = useState<Platform>("twitter");
   const [isConnected, setIsConnected] = useState(false);
+  const [isconnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
+  const [isFetchingPosts, setIsFetchingPosts] = useState(false);
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [userData, setUserData] = useState({}) as any; // Replace with actual user data if needed
+  const [userData, setUserData] = useState({}) as any;
+  console.log("userData", userData);
 
   useEffect(() => {
     const connected =
@@ -28,9 +32,10 @@ export default function SocialMediaConnectPage() {
     setIsConnected(connected);
   }, [activePlatform]);
 
-  const handleConnect = async () => {
-    try {
-      const res = (await apiRequest(
+  const connectAccountMutation = useMutation({
+    mutationFn: async () => {
+      setIsConnecting(true);
+      const response = await apiRequest(
         "POST",
         `/users/social-account`,
         {
@@ -38,39 +43,90 @@ export default function SocialMediaConnectPage() {
           platform: "Twitter",
         },
         true
-      )) as any;
-
-      if (res.success) {
-        localStorage.setItem(`connected_${activePlatform}`, "true");
-        setIsConnected(true);
-        toast({
-          title: `Success`,
-          description: `Your ${activePlatform} is now connected.`,
-        });
+      );
+      return response.json(); // return parsed JSON
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      if (data.oauthUrl) {
+        // Redirect to the OAuth URL
+        window.location.href = data.oauthUrl;
       } else {
         toast({
           title: `Error`,
           description: `Failed to connect to ${activePlatform}.`,
         });
       }
-    } catch (err) {
-      toast({ title: "Error", description: "Something went wrong." });
-    }
-  };
+      setIsConnecting(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Something went wrong.",
+        variant: "destructive",
+      });
+      setIsConnecting(false);
+    },
+  });
+
+  const fetchPostsMutation = useMutation({
+    mutationFn: async () => {
+      setIsFetchingPosts(true);
+      const res = await apiRequest(
+        "GET",
+        `/posts/initiate-twitter-post?userId=${userData?.id}`,
+        null,
+        true
+      );
+      return res.json(); // return parsed JSON
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      if (data.oauthUrl) {
+        // Redirect to the OAuth URL
+        window.location.href = data.oauthUrl;
+      } else {
+        console.log("Fetched Twitter posts:", data);
+        toast({
+          title: "Posts fetched",
+          description: `Successfully fetched ${
+            data?.length || 0
+          } posts from Twitter.`,
+        });
+      }
+      setIsFetchingPosts(false);
+    },
+    onError: (error) => {
+      console.log("error", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch Twitter posts.",
+        variant: "destructive",
+      });
+      setIsFetchingPosts(false);
+    },
+  });
 
   useEffect(() => {
-    const stored = localStorage.getItem("userData");
-    if (stored) {
-      try {
-        const user: any = JSON.parse(stored);
-        if (user?.id) {
-          setUserData(user);
-        }
-      } catch (e) {
-        console.error("Invalid userData in localStorage");
-      }
+    const storedAccounts = localStorage.getItem("socialMediaAccounts");
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      setUserData(JSON.parse(userData));
     }
-  }, []);
+    if (storedAccounts) {
+      try {
+        const accounts = JSON.parse(storedAccounts);
+        const found = accounts.some(
+          (acc: any) => acc.platform.toLowerCase() === activePlatform
+        );
+        setIsConnected(found);
+      } catch (e) {
+        console.error("Invalid socialMediaAccounts in localStorage");
+      }
+    } else {
+      setIsConnected(false);
+    }
+  }, [activePlatform]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -126,16 +182,25 @@ export default function SocialMediaConnectPage() {
           {/* Content */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-md shadow-md border border-slate-200 dark:border-slate-700">
             {isConnected ? (
-              <p className="text-green-600 dark:text-green-400">
-                Your {activePlatform} account is connected.
-              </p>
+              <div>
+                <p className="text-green-600 dark:text-green-400 mb-4">
+                  Your {activePlatform} account is connected.
+                </p>
+                {activePlatform === "twitter" && (
+                  <Button onClick={() => fetchPostsMutation.mutate()}>
+                    {isFetchingPosts
+                      ? "Fetching Posts..."
+                      : "Fetch Twitter Posts"}
+                  </Button>
+                )}
+              </div>
             ) : (
               <div>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">
                   You have not connected your {activePlatform} account yet.
                 </p>
-                <Button onClick={handleConnect}>
-                  Connect {activePlatform}
+                <Button onClick={() => connectAccountMutation.mutate()}>
+                  {isconnecting ? "Connecting..." : `Connect ${activePlatform}`}
                 </Button>
               </div>
             )}

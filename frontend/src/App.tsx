@@ -14,6 +14,7 @@ import { ThemeProvider } from "./hooks/use-theme";
 import AuthModal from "./components/auth/AuthModal";
 import ProfilePage from "./pages/ProfilePage";
 import SocialMediaConnect from "./pages/SocialMediaConnect";
+import SocialMediaSuccess from "./pages/SocialMediaSuccess";
 
 function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -50,6 +51,7 @@ function Router() {
           <Route path="/trends" component={Trends} />
           <Route path="/profile" component={ProfilePage} />
           <Route path="/socialmedia" component={SocialMediaConnect} />
+          <Route path="/social-media-success" component={SocialMediaSuccess} />
           <Route component={NotFound} />
         </Switch>
       )}

@@ -6,8 +6,6 @@
 // import crypto from "crypto"; // For generating state parameter
 // import { TwitterApi } from "twitter-api-v2";
 
-
-
 // // Load environment variables from .env file
 // dotenv.config();
 
@@ -727,8 +725,7 @@
 //     //     username: page.name,
 //     //     accessToken: page.access_token,
 //     //   };
-//     // } 
-
+//     // }
 
 //     }
 //     else{
@@ -817,7 +814,6 @@
 // }
 // };
 
-
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -835,7 +831,11 @@ const execPromise = util.promisify(exec);
 dotenv.config();
 
 // Validate environment variables
-if (!process.env.TWITTER_API_KEY || !process.env.TWITTER_API_SECRET || !process.env.TWITTER_CALLBACK_URL) {
+if (
+  !process.env.TWITTER_API_KEY ||
+  !process.env.TWITTER_API_SECRET ||
+  !process.env.TWITTER_CALLBACK_URL
+) {
   console.error("Missing required Twitter environment variables");
   process.exit(1);
 }
@@ -864,7 +864,8 @@ console.log(`Python script: ${PYTHON_SCRIPT}`);
 
 // Function to generate a valid PKCE code verifier
 function generateCodeVerifier() {
-  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
   const length = 64;
   let result = "";
   const bytes = crypto.randomBytes(length);
@@ -899,13 +900,22 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 8);
     const userData = { email, password: hashedPassword, name };
     const user = await User.createUser(userData);
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     res.status(201).json({
       token,
-      user: { id: user._id, email: user.email, name: user.name, socialMediaAccounts: user.socialMediaAccounts },
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        socialMediaAccounts: user.socialMediaAccounts,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: `Error registering user: ${error.message}` });
+    res
+      .status(500)
+      .json({ message: `Error registering user: ${error.message}` });
   }
 };
 
@@ -914,7 +924,9 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
     const user = await User.findByEmail(email);
     if (!user) {
@@ -924,13 +936,22 @@ export const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     res.status(201).json({
       token,
-      user: { id: user._id, email: user.email, name: user.name, socialMediaAccounts: user.socialMediaAccounts },
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        socialMediaAccounts: user.socialMediaAccounts,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: `Error logging in user: ${error.message}` });
+    res
+      .status(500)
+      .json({ message: `Error logging in user: ${error.message}` });
   }
 };
 
@@ -985,7 +1006,9 @@ export const addSocialMediaAccount = async (req, res) => {
   try {
     const { userId, platform } = req.body;
     if (!userId || !platform) {
-      return res.status(400).json({ message: "User ID and platform are required" });
+      return res
+        .status(400)
+        .json({ message: "User ID and platform are required" });
     }
     const validPlatforms = ["Twitter", "Instagram", "Facebook"];
     if (!validPlatforms.includes(platform)) {
@@ -995,22 +1018,28 @@ export const addSocialMediaAccount = async (req, res) => {
     if (platform === "Twitter") {
       // Generate state
       const state = crypto.randomBytes(16).toString("hex");
-      
+
       // Execute Python script to initiate OAuth
       const command = `"${PYTHON_EXEC}" "${PYTHON_SCRIPT}" Twitter ${userId}`;
       console.log(`Executing command: ${command}`);
-      const { stdout, stderr } = await execPromise(command, { cwd: PYTHON_DIR });
+      const { stdout, stderr } = await execPromise(command, {
+        cwd: PYTHON_DIR,
+      });
 
       if (stderr) {
         console.error(`Python script error: ${stderr}`);
-        return res.status(500).json({ message: `Error initiating Twitter OAuth: ${stderr}` });
+        return res
+          .status(500)
+          .json({ message: `Error initiating Twitter OAuth: ${stderr}` });
       }
 
       // Extract OAuth URL from Python script output
       const urlMatch = stdout.match(/Twitter OAuth URL: (https:\/\/[^\s]+)/);
       if (!urlMatch) {
         console.error(`Failed to extract OAuth URL from: ${stdout}`);
-        return res.status(500).json({ message: `Failed to initiate Twitter OAuth: Invalid script output\n${stdout}` });
+        return res.status(500).json({
+          message: `Failed to initiate Twitter OAuth: Invalid script output\n${stdout}`,
+        });
       }
 
       const oauthUrl = urlMatch[1];
@@ -1033,7 +1062,9 @@ export const addSocialMediaAccount = async (req, res) => {
     }
   } catch (error) {
     console.error("Add Social Media Account Error:", error);
-    res.status(500).json({ message: `Error initiating OAuth: ${error.message}` });
+    res
+      .status(500)
+      .json({ message: `Error initiating OAuth: ${error.message}` });
   }
 };
 
@@ -1044,42 +1075,70 @@ export const handleSocialCallback = async (req, res) => {
     console.log("Callback - Raw req.query:", req.query);
 
     if (error) {
-      return res.status(400).json({ message: `OAuth error: ${error_description || error}` });
+      return res
+        .status(400)
+        .json({ message: `OAuth error: ${error_description || error}` });
     }
 
     if (!state || !code) {
-      return res.status(400).json({ message: "Missing state or code parameter" });
+      return res
+        .status(400)
+        .json({ message: "Missing state or code parameter" });
     }
 
     // Find user by state
     const user = await User.findOne({ "twitter_oauth.state": state });
-    console.log("Found user twitter_oauth:", user ? user.twitter_oauth : "null");
+    console.log(
+      "Found user twitter_oauth:",
+      user ? user.twitter_oauth : "null"
+    );
     if (!user || !user.twitter_oauth) {
-      return res.status(400).json({ message: "Invalid state or user not found" });
+      return res
+        .status(400)
+        .json({ message: "Invalid state or user not found" });
     }
 
     const storedUserId = String(user.twitter_oauth.userId);
     console.log("Callback userId:", storedUserId, "Type:", typeof storedUserId);
 
-    if (user.twitter_oauth.platform === "Twitter" || !user.twitter_oauth.platform) {
+    if (
+      user.twitter_oauth.platform === "Twitter" ||
+      !user.twitter_oauth.platform
+    ) {
       // Execute Python script to handle callback
       const command = `"${PYTHON_EXEC}" "${PYTHON_SCRIPT}" Twitter ${storedUserId} ${state} ${code}`;
       console.log(`Executing command: ${command}`);
-      const { stdout, stderr } = await execPromise(command, { cwd: PYTHON_DIR });
+      const { stdout, stderr } = await execPromise(command, {
+        cwd: PYTHON_DIR,
+      });
 
       if (stderr) {
         console.error(`Python script error: ${stderr}`);
-        return res.status(500).json({ message: `Error handling Twitter callback: ${stderr}` });
+        return res
+          .status(500)
+          .json({ message: `Error handling Twitter callback: ${stderr}` });
       }
 
       // Check if Python script succeeded
       if (!stdout.includes("Twitter authorization completed")) {
         console.error(`Python script failed: ${stdout}`);
-        return res.status(500).json({ message: `Twitter authorization failed: ${stdout}` });
+        return res
+          .status(500)
+          .json({ message: `Twitter authorization failed: ${stdout}` });
       }
 
+      const account = user.socialMediaAccounts[0];
+
+      const query = new URLSearchParams({
+        platform: account.platform,
+        username: account.username,
+        accessToken: account.accessToken,
+        refreshToken: account.refreshToken,
+      });
       // Redirect to frontend success page
-      res.redirect("http://localhost:3000/social-media-success");
+      res.redirect(
+        `http://localhost:5173/social-media-success?${query.toString()}`
+      );
     } else {
       // Handle Instagram and Facebook (unchanged)
       let accountData;
@@ -1087,17 +1146,20 @@ export const handleSocialCallback = async (req, res) => {
         const appId = process.env.INSTAGRAM_APP_ID;
         const appSecret = process.env.INSTAGRAM_APP_SECRET;
         const redirectUri = process.env.INSTAGRAM_CALLBACK_URL;
-        const tokenResponse = await fetch(`https://api.instagram.com/oauth/access_token`, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            client_id: appId,
-            client_secret: appSecret,
-            grant_type: "authorization_code",
-            redirect_uri: redirectUri,
-            code,
-          }),
-        });
+        const tokenResponse = await fetch(
+          `https://api.instagram.com/oauth/access_token`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              client_id: appId,
+              client_secret: appSecret,
+              grant_type: "authorization_code",
+              redirect_uri: redirectUri,
+              code,
+            }),
+          }
+        );
         const tokenData = await tokenResponse.json();
         if (tokenData.error) {
           return res.status(400).json({ message: tokenData.error.message });
@@ -1146,13 +1208,19 @@ export const handleSocialCallback = async (req, res) => {
       }
 
       // Update user's socialMediaAccounts
-      const updatedUser = await User.addSocialMediaAccount(storedUserId, accountData);
+      const updatedUser = await User.addSocialMediaAccount(
+        storedUserId,
+        accountData
+      );
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
       }
 
       // Clean up temporary oauth data
-      await User.updateOne({ _id: storedUserId }, { $unset: { twitter_oauth: "" } });
+      await User.updateOne(
+        { _id: storedUserId },
+        { $unset: { twitter_oauth: "" } }
+      );
 
       // Redirect to frontend success page
       res.redirect("http://localhost:3000/social-media-success");
@@ -1162,7 +1230,9 @@ export const handleSocialCallback = async (req, res) => {
       message: error.message,
       stack: error.stack,
     });
-    res.status(500).json({ message: `Error handling callback: ${error.message}` });
+    res
+      .status(500)
+      .json({ message: `Error handling callback: ${error.message}` });
   }
 };
 
@@ -1171,9 +1241,15 @@ export const removeSocialMediaAccount = async (req, res) => {
   try {
     const { userId, platform, username } = req.body;
     if (!userId || !platform || !username) {
-      return res.status(400).json({ message: "User ID, platform, and username are required" });
+      return res
+        .status(400)
+        .json({ message: "User ID, platform, and username are required" });
     }
-    const updatedUser = await User.removeSocialMediaAccount(userId, platform, username);
+    const updatedUser = await User.removeSocialMediaAccount(
+      userId,
+      platform,
+      username
+    );
     if (!updatedUser) {
       return res.status(404).json({ message: "User or account not found" });
     }
@@ -1184,7 +1260,9 @@ export const removeSocialMediaAccount = async (req, res) => {
       socialMediaAccounts: updatedUser.socialMediaAccounts,
     });
   } catch (error) {
-    res.status(500).json({ message: `Error removing account: ${error.message}` });
+    res
+      .status(500)
+      .json({ message: `Error removing account: ${error.message}` });
   }
 };
 
