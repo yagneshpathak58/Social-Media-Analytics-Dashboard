@@ -7,9 +7,15 @@ import postRoutes from "./routes/postRoute.js";
 import surveysRoute from "./routes/surveysRoute.js";
 import analyticsRoute from "./routes/analyticsRoute.js";
 import { startTokenRefreshJob } from "./jobs/refreshTokens.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Load environment variables from .env file
 dotenv.config();
+
+// Get __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create Express app
 const app = express();
@@ -26,6 +32,10 @@ app.use(
     })
 );
 app.use(express.json());
+
+
+// Serve static files from the graphs directory
+app.use("/graphs", express.static(path.join(__dirname, "../graphs")));
 
 // Routes
 app.use("/api/users", userRoutes);
