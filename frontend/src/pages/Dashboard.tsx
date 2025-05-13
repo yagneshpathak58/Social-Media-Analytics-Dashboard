@@ -11,7 +11,6 @@ import TrendingTopics from '../components/dashboard/TrendingTopics';
 import AuthModal from '../components/auth/AuthModal';
 import { Button } from '../components/ui/button';
 import { useToast } from '../hooks/use-toast';
-// import { formatDateRange } from '@/lib/utils';
 
 export default function Dashboard() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -230,7 +229,7 @@ export default function Dashboard() {
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Get insights on your social media performance</p>
             </div>
             
-            <div className="mt-4 md:mt-0 flex flex-wrap items-center space-x-2">
+            {/* <div className="mt-4 md:mt-0 flex flex-wrap items-center space-x-2">
               <div className="relative">
                 <select 
                   className="appearance-none bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-2 pl-3 pr-8 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm"
@@ -264,7 +263,7 @@ export default function Dashboard() {
                 <i className="ri-download-line"></i>
                 <span>Export</span>
               </Button>
-            </div>
+            </div> */}
           </div>
           
           {/* Platform Selection Tabs */}

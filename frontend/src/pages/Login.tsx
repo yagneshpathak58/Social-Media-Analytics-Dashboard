@@ -47,7 +47,7 @@ export default function Login() {
         title: 'Success',
         description: 'You have been logged in successfully',
       });
-      navigate('/');
+      navigate('/socialmedia');
     },
     onError: (error) => {
       toast({

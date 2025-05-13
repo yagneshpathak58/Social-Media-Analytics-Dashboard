@@ -3,9 +3,9 @@ import { Link, useLocation } from "wouter";
 import { useTheme } from "../../hooks/use-theme";
 
 interface NavbarProps {
-  toggleSidebar: () => void;
-  showAuthModal: () => void;
-  isAuthenticated: boolean;
+  toggleSidebar?: () => void;
+  showAuthModal?: () => void;
+  isAuthenticated?: boolean;
   userData?: {
     name: string;
     avatar: string;
@@ -15,7 +15,7 @@ interface NavbarProps {
 export default function Navbar({ toggleSidebar, showAuthModal }: NavbarProps) {
   const { theme, setTheme } = useTheme();
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  // const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   // Read user data
   const token = localStorage.getItem("token");
@@ -30,6 +30,7 @@ export default function Navbar({ toggleSidebar, showAuthModal }: NavbarProps) {
   const handleSignOut = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
+    localStorage.clear();
     window.location.href = "/";
   };
 
@@ -152,12 +153,12 @@ export default function Navbar({ toggleSidebar, showAuthModal }: NavbarProps) {
                     >
                       Your Profile
                     </Link>
-                    <Link
+                    {/* <Link
                       href="/settings"
                       className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
                     >
                       Settings
-                    </Link>
+                    </Link> */}
                     <button
                       onClick={handleSignOut}
                       className="w-full text-left block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
