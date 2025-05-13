@@ -1,4 +1,3 @@
-# Import required libraries
 import pymongo
 from pymongo import MongoClient
 import pandas as pd
@@ -6,6 +5,8 @@ from textblob import TextBlob
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+import json
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,67 +16,52 @@ MONGO_URI = os.getenv("MONGO_URI")
 
 # Connect to MongoDB
 client = MongoClient(MONGO_URI)
-db = client["SocialMediaAnalytics"]  # Database name
-surveys_collection = db["surveys_collection"]   # Surveys collection
+db = client["SocialMediaAnalytics"]
+surveys_collection = db["surveys_collection"]
 
 def analyze_sentiment(text):
     """
     Analyze sentiment of a text response using TextBlob.
     Returns 'positive', 'negative', or 'neutral'.
     """
-
-    # Create TextBlob object
     blob = TextBlob(text)
-
-    # Get polarity score (-1 to 1)
     polarity = blob.sentiment.polarity
-
-    # Determine sentiment
     if polarity > 0:
         return "positive"
-    elif polarity <0:
+    elif polarity < 0:
         return "negative"
     else:
         return "neutral"
-    
-def process_surveys():
-    """
-    Process survey responses and generate summary statistics.
-    """
-    # Fetch all surveys from the surveys collection
-    surveys = surveys_collection.find()
 
-    # Convert to list for processing
-    surveys_list = list(surveys)
-
-    # If no surveys, exit
-    if not surveys_list:
-        print("No surveys found to process.")
-        return
+def process_survey(survey_id):
+    """
+    Process a specific survey and generate summary statistics.
+    """
+    from bson.objectid import ObjectId
+    survey = surveys_collection.find_one({"_id": ObjectId(survey_id)})
     
+    if not survey:
+        print(f"No survey found with ID: {survey_id}", file=sys.stderr)
+        return None
+
     # Initialize lists for summary
     question_responses = []
     sentiment_counts = {"positive": 0, "negative": 0, "neutral": 0}
 
-    # Process each survey
-    for survey in surveys_list:
-        for q in survey["questions"]:
-            # Analyze sentiment of response
-            sentiment = analyze_sentiment(q["response"])
-            
-            # Update sentiment counts
-            sentiment_counts[sentiment] += 1
-            
-            # Store question-response data
-            question_responses.append({
-                "surveyId": survey["_id"],
-                "userId": survey.get("userId"),
-                "question": q["question"],
-                "response": q["response"],
-                "sentiment": sentiment,
-                "submittedAt": survey["submittedAt"]
-            })
-    
+    # Process the survey
+    for q in survey["questions"]:
+        sentiment = analyze_sentiment(q["response"])
+        sentiment_counts[sentiment] += 1
+        question_responses.append({
+            "surveyId": survey["_id"],
+            "userId": survey.get("userId"),
+            "postId": survey.get("postId"),
+            "question": q["question"],
+            "response": q["response"],
+            "sentiment": sentiment,
+            "submittedAt": survey["submittedAt"]
+        })
+
     # Convert to DataFrame for analysis
     df = pd.DataFrame(question_responses)
 
@@ -90,38 +76,33 @@ def process_surveys():
         }).to_dict()
     }
 
-    # Print summary
-    print("Survey Processing Summary:")
-    print(f"Total Responses: {total_responses}")
-    print(f"Sentiment Distribution: {sentiment_counts}")
-    print("\nQuestion-wise Analysis:")
-    for question, stats in summary["questions"].items():
-        print(f"\nQuestion: {question}")
-        print(f"Response Count: {stats['response']}")
-        print(f"Sentiment Breakdown: {stats['sentiment']}")
-
-    
-    # Optionally, save summary to MongoDB (e.g., in a new collection)
-    # db["survey_summaries"].insert_one({
-    #     "summary": summary,
-    #     "processedAt": datetime.utcnow()
-    # })
+    return summary
 
 def main():
     """
     Main function to run the survey processing.
     """
-
     try:
         print("Starting survey processing...")
-        process_surveys()
-        print("Survey processing completed.")
+        if len(sys.argv) < 2:
+            print("Usage: python process_surveys.py <survey_id>", file=sys.stderr)
+            sys.exit(1)
+
+        survey_id = sys.argv[1]
+        summary = process_survey(survey_id)
+        if summary:
+            print(json.dumps(summary))
+            print("Survey processing completed.")
+        else:
+            print(f"Failed to process survey {survey_id}", file=sys.stderr)
+            sys.exit(1)
+
     except Exception as e:
-        print(f"Error during survey processing: {str(e)}")
+        print(f"Error during survey processing: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
     finally:
-        # Close MongoDB connection
         client.close()
-    
+
 if __name__ == '__main__':
     main()
-   
