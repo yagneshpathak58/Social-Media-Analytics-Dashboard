@@ -36,8 +36,10 @@
 
 
 import express from "express";
-import { createSurvey, deleteSurvey, getAllSurveys, getSurveysByUser } from "../controllers/surveyController.js";
+// import { createSurvey, deleteSurvey, getAllSurveys, getSurveysByUser } from "../controllers/surveyController.js";
+// import{}
 import Survey from "../models/surveyModel.js";
+import { createSurvey, deleteSurvey, getAllSurveys, getSurveysByUser } from "../controllers/surveyControllers.js";
 
 // Create an Express router
 const router = express.Router();
