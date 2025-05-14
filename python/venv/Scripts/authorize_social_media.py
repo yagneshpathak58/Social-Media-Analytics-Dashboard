@@ -191,6 +191,7 @@ def handle_twitter_callback(user_id, state, code):
         if refresh_token:
             account_data["refreshToken"] = refresh_token
 
+        print(f"Preparing to update with account_data: {account_data}")
         result = users_collection.update_one(
             {"_id": oid},
             {"$push": {"socialMediaAccounts": account_data}}
@@ -199,22 +200,20 @@ def handle_twitter_callback(user_id, state, code):
         if result.matched_count == 0:
             print(f"Error: No document found for _id: {user_id}")
             return False
-        if result.modified_count > 0:
-            print(f"Successfully added Twitter account for user {user_id}")
-            # Clean up temporary OAuth data
-            users_collection.update_one(
-                {"_id": oid},
-                {"$unset": {"twitter_oauth": ""}}
-            )
-            # Log updated document
-            updated_user = users_collection.find_one({"_id": oid})
-            print(f"Updated user document: {updated_user}")
-            return True
-        else:
+        if result.modified_count == 0:
             print("Failed to update socialMediaAccounts (no changes made)")
             return False
+        users_collection.update_one(
+            {"_id": oid},
+            {"$unset": {"twitter_oauth": ""}}
+        )
+
+        print("Twitter authorization completed")
+        updated_user = users_collection.find_one({"_id": oid})
+        print(f"Updated user document: {updated_user}")
+        return True        
     except Exception as e:
-        print(f"Error handling Twitter callback: {e}")
+        print(f"Error handling Twitter OAuth callback: {e}")
         return False
 
 # Main function to simulate OAuth flow

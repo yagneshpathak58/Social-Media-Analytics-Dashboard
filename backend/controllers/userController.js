@@ -1127,14 +1127,22 @@ export const handleSocialCallback = async (req, res) => {
           .json({ message: `Twitter authorization failed: ${stdout}` });
       }
 
-      const account = user.socialMediaAccounts[0];
+      // Fetch updated user
+      const updatedUser = await User.findById(storedUserId);
+      if (!updatedUser || !updatedUser.socialMediaAccounts.length) {
+        return res.status(500).json({ message: "Failed to add social media account" });
+      }
 
+      const account = updatedUser.socialMediaAccounts[0];
       const query = new URLSearchParams({
         platform: account.platform,
         username: account.username,
         accessToken: account.accessToken,
-        refreshToken: account.refreshToken,
+        refreshToken: account.refreshToken || "",
       });
+
+      // Clean up OAuth data
+      await User.updateOne({ _id: storedUserId }, { $unset: { twitter_oauth: "" } });
       // Redirect to frontend success page
       res.redirect(
         `http://localhost:5173/social-media-success?${query.toString()}`
@@ -1208,11 +1216,9 @@ export const handleSocialCallback = async (req, res) => {
       }
 
       // Update user's socialMediaAccounts
-      const updatedUser = await User.addSocialMediaAccount(
-        storedUserId,
-        accountData
-      );
-      if (!updatedUser) {
+      const updatedUser = await User.addSocialMediaAccount(storedUserId, accountData);
+      if (!updatedUser) 
+      {
         return res.status(404).json({ message: "User not found" });
       }
 
@@ -1222,6 +1228,7 @@ export const handleSocialCallback = async (req, res) => {
         { $unset: { twitter_oauth: "" } }
       );
 
+      await User.updateOne({ _id: storedUserId }, { $unset: { twitter_oauth: "" } })
       // Redirect to frontend success page
       res.redirect("http://localhost:3000/social-media-success");
     }

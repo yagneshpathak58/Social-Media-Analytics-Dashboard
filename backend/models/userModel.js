@@ -106,19 +106,35 @@ const userSchema = new mongoose.Schema({
     },
   });
 
-  // Ensure unique usernames per platform within socialMediaAccounts
+  // Add partial unique index
 userSchema.index(
-    { "socialMediaAccounts.platform": 1, "socialMediaAccounts.username": 1 },
-    { unique: true } // Prevents duplicate usernames for the same platform
-  );
+  { "socialMediaAccounts.platform": 1, "socialMediaAccounts.username": 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      "socialMediaAccounts.platform": { $exists: true, $ne: null },
+      "socialMediaAccounts.username": { $exists: true, $ne: null },
+    },
+  }
+);
 
-  // Static method: Create a new user
+ // Add pre-save hook
+userSchema.pre("save", function (next) {
+  if (!this.socialMediaAccounts) {
+    this.socialMediaAccounts = [];
+  }
+  next();
+});
+
+// Update createUser
 userSchema.statics.createUser = async function (userData) {
-    // Create a new user document with the provided data
-    const user = new this(userData);
-    // Save the user to the database and return the result
-    return await user.save();
+  const data = {
+    ...userData,
+    socialMediaAccounts: userData.socialMediaAccounts || [],
   };
+  const user = new this(data);
+  return await user.save();
+};
 
   // Static method: Find a user by email
 userSchema.statics.findByEmail = async function (email) {
